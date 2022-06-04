@@ -1,0 +1,16 @@
+<h2>Artilharia</h2>
+<table>
+    <tr>
+        <th class="w150px">Artilheiro</th>
+        <th class="w25px">Gols</th>
+        <th class="w150px">Clube</th>
+        
+    </tr>
+    {% for row in artilharia %}
+    <tr>        
+        <td>{{ row.Artilheiro }}</td>
+        <td>{{ row.Gols }}</td>
+        <td>{{ row.Clube }}</td>
+    </tr>
+    {% endfor %}
+</table>

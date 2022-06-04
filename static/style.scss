@@ -1,0 +1,292 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+$table-border-radius: 10px;
+
+$color-1: #eeeeee; // page
+$color-2: #c4d0de; // tabelas
+$color-3: #333333; // footer
+$color-4: #ffffff; // linhas tabela
+$color-5: #ebf0f6; // linhas tabela
+$color-6: #111111; // fonte
+$color-7: #dddddd; // fonte
+$color-8: #777777; // bordas
+
+
+/* geral */
+body {
+  background-color: $color-1;
+  font-size: 16px;
+  margin: 0!important;
+  padding: 0;
+  font-family: 'Open Sans', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-align: center;
+  padding: 1rem 0 1rem 0;
+  margin: 0;
+}
+
+hr {
+  width: 90%;
+  border: 0px;
+  border-bottom: 1px solid $color-2;
+}
+
+/* páginas */
+.box {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.campeao {
+  text-align: center;
+}
+
+.campeao p {
+  font-size: 24px;
+  font-weight: bolder;
+}
+
+.campeao img {
+  width: 300px;
+}
+
+.justify {
+  text-align: justify;
+}
+
+.grid-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+section .grid-container a {
+  margin: 10px;
+  text-align: center;  
+}
+
+.grid-container a div {
+  padding: 0;
+}
+
+// title //
+section div {
+  max-width: 780px;
+  padding-bottom: 1rem;
+  margin: 0 auto;
+}
+
+section hr {
+  max-width: 780px;
+}
+
+section h1 {
+  font-size: 40px;
+}
+
+.title {
+  background-color: $color-3;
+  color: $color-7;
+}
+
+section:nth-child(1) {
+  margin-bottom: 2rem;
+}
+
+// links //
+a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 900;
+}
+a:hover {
+  color: #f1c40f
+}
+
+
+/* tabelas */
+table {
+  margin: 0 auto 1rem auto;
+  text-align: center;
+  border-collapse: collapse;
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.15);
+}
+
+th{
+  background-color: $color-2; 
+  color:#000000; 
+}
+
+tr:nth-child(odd) {
+  background-color: $color-5;
+}
+
+tr:nth-child(even) {
+  background-color: $color-4;
+}
+
+td, th {  
+  padding: 0.5rem;  
+}
+
+tbody tr:last-of-type {
+  border-bottom: 3px solid $color-2;
+}
+
+tbody th:first-of-type {
+  border-top-left-radius: $table-border-radius;
+}
+
+tbody th:last-of-type {
+  border-top-right-radius: $table-border-radius;
+}
+
+tr:hover {
+  background-color: $color-3;
+  color: #FFF;
+}
+
+.pc {
+  display: table;
+}
+
+.mobile {
+  display: none;
+}
+
+.w-1-5rem {
+  min-width: 1.5rem;
+}
+
+.w-4rem {
+  min-width: 4rem;
+}
+
+.w-5rem {
+  min-width: 5rem;
+}
+
+.w-7rem {
+  min-width: 7rem;
+}
+.w-6rem {
+  min-width: 6rem;
+}
+
+.w-8rem {
+  min-width: 8rem;
+}
+
+.w-9rem {
+  min-width: 9rem;
+}
+
+.w-12rem {
+  min-width: 12rem;
+}
+
+/* dados do campeonato */
+.dados td:nth-child(1) {
+  background-color: $color-2;
+  color:$color-6;
+}
+
+.dados tbody tr:last-of-type {
+  border-bottom: 0px solid $color-2;
+}
+
+.dados .w-9rem {
+  border-top-left-radius: $table-border-radius;
+}
+
+.dados .dados-border-r {
+  border-bottom-left-radius: $table-border-radius;
+}
+
+.dados tbody:last-of-type {
+  border-right: 3px solid $color-2;
+}
+
+/* footer */
+footer {
+  margin-top: 5rem;
+  padding: 10px;
+  background-color: $color-3;
+  border-top: 2px solid $color-8;
+  color: $color-7;
+}
+
+ul{ 
+  list-style-type: none;
+  padding: 0;
+}
+
+footer div div:nth-child(1) {
+  width: 39rem;
+}
+
+footer div h1 {
+  text-align: left;  
+  padding: 1rem 0;
+  font-size: 1.5rem;
+}
+
+footer div div:nth-child(2) {
+  width: 8rem;
+}
+
+footer div div:nth-child(3) {
+  width: 100%;
+}
+
+footer hr {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid $color-2;
+}
+
+
+@media only screen and (max-width: 850px) {
+  body {
+    font-size: 16px;
+  }
+
+  table {
+    font-size: 14px;
+  }
+
+  th {
+    font-size: 12px;
+  }
+
+  .pc {
+    display: none;  
+  }
+
+  .mobile {
+    display: table;
+  }
+
+  /* footer div */
+  footer div {
+    width: 100%;
+  }
+
+  .justify {
+    text-align: justify;
+    padding: 0 1rem;
+  }
+
+  section a {
+    padding: 0 1rem;
+  }
+
+  footer .grid-container {
+    justify-content: left;
+  }
+}
+
+td i {
+  font-size: 0.8em;
+}

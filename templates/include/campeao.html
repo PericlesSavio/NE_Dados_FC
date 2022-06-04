@@ -1,0 +1,24 @@
+<h2>Campeão</h2>
+<div class="campeao">
+    {% for row in campeao %}    
+        <img src="../../static/escudos/{{ row.clube }}.png">
+        <p>{{ row.completo }}</p>
+        <p>{{ row.titulos }}º título</p>
+    {% endfor %}
+
+    <table class="pc"> 
+        {% include 'include/classificacao_th_pc.html' %}    
+        {% for row in campanha %}
+        {% include 'include/classificacao_td_pc.html' %}        
+        {% endfor %}
+    </table>
+    <table class="mobile">
+      {% include 'include/classificacao_th_mobile.html' %}    
+      {% for row in campanha %}
+      {% include 'include/classificacao_td_mobile.html' %}        
+      {% endfor %}
+    </table>
+
+
+
+</div>

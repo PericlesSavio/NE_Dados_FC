@@ -1,0 +1,41 @@
+<h2>Dados</h2>
+
+<table class="dados">
+    <tr>        
+        <td class="w-9rem">Nº de participantes</td>
+        <td class="w-6rem">{{ n_participantes }}</td>
+    </tr>
+    <tr>        
+        <td>Nº de partidas</td>
+        <td>{{ n_partidas }}</td>
+    </tr>
+    <tr>        
+        <td>Nº de gols</td>
+        <td>{{ total_jogos }}</td>
+    </tr>
+    <tr>        
+        <td>Média de gols</td>
+        <td>{{ media_gols }}</td>
+    </tr>
+    <tr>        
+        <td class="dados-border-r">Período</td>
+        <td>{{ periodo[0] }}<br>{{ periodo[1] }}</td>
+    </tr>
+</table>
+
+<h2>Participantes</h2>
+<table>
+    <tr>
+        <th class="w-12rem">Clube</th>
+        <th class="w-6rem">Participações</th>
+    </tr>
+    {% for row in participantes %}
+    <tr>        
+        <td>{{ row.Clube }}</td>
+        <td>{{ row.Participações }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Regulamento</h2>
+<p class="justify">{{ regulamento }}</p>

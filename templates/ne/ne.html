@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }}</title>
+    <link rel='stylesheet' href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+  </head>
+  <body>
+
+    {% include 'include/title_n3.html' %}  
+  
+    <div class="box">
+
+      {% include 'include/dados.html' %}          
+
+      {% if grupo_a_jogos|length %}
+        <h2>Primeira fase</h2>
+        <h3>Grupo A</h3>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in grupo_a_jogos %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in grupo_a_jogos %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+        <br>
+        <table class="pc"> 
+            {% include 'include/classificacao_th_pc.html' %}    
+            {% for row in grupo_a_classificacao %}
+            {% include 'include/classificacao_td_pc.html' %}        
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/classificacao_th_mobile.html' %}    
+          {% for row in grupo_a_classificacao %}
+          {% include 'include/classificacao_td_mobile.html' %}        
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      
+      {% if grupo_b_jogos|length %}          
+        <h3>Grupo B</h3>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in grupo_b_jogos %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in grupo_b_jogos %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+        <br>
+        <table class="pc"> 
+            {% include 'include/classificacao_th_pc.html' %}    
+            {% for row in grupo_b_classificacao %}
+            {% include 'include/classificacao_td_pc.html' %}        
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/classificacao_th_mobile.html' %}    
+          {% for row in grupo_b_classificacao %}
+          {% include 'include/classificacao_td_mobile.html' %}        
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+
+      {% if grupo_c_jogos|length %}
+        <h3>Grupo C</h3>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in grupo_c_jogos %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in grupo_c_jogos %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+        <br>
+        <table class="pc"> 
+            {% include 'include/classificacao_th_pc.html' %}    
+            {% for row in grupo_c_classificacao %}
+            {% include 'include/classificacao_td_pc.html' %}        
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/classificacao_th_mobile.html' %}    
+          {% for row in grupo_c_classificacao %}
+          {% include 'include/classificacao_td_mobile.html' %}        
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+
+      {% if grupo_d_jogos|length %}
+        <h3>Grupo D</h3>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in grupo_d_jogos %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in grupo_d_jogos %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+        <br>
+        <table class="pc"> 
+            {% include 'include/classificacao_th_pc.html' %}    
+            {% for row in grupo_d_classificacao %}
+            {% include 'include/classificacao_td_pc.html' %}        
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/classificacao_th_mobile.html' %}    
+          {% for row in grupo_d_classificacao %}
+          {% include 'include/classificacao_td_mobile.html' %}        
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+
+      {% if grupo_e_jogos|length %}
+        <h3>Grupo E</h3>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in grupo_e_jogos %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in grupo_e_jogos %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+        <br>
+        <table class="pc"> 
+            {% include 'include/classificacao_th_pc.html' %}    
+            {% for row in grupo_e_classificacao %}
+            {% include 'include/classificacao_td_pc.html' %}        
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/classificacao_th_mobile.html' %}    
+          {% for row in grupo_e_classificacao %}
+          {% include 'include/classificacao_td_mobile.html' %}        
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      {% if grupo_f_jogos|length %}
+        <h3>Grupo F</h3>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in grupo_f_jogos %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in grupo_f_jogos %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+        <br>
+        <table class="pc"> 
+            {% include 'include/classificacao_th_pc.html' %}    
+            {% for row in grupo_f_classificacao %}
+            {% include 'include/classificacao_td_pc.html' %}        
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/classificacao_th_mobile.html' %}    
+          {% for row in grupo_f_classificacao %}
+          {% include 'include/classificacao_td_mobile.html' %}        
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+
+      {% if grupo_e2_jogos|length %}
+        <h2>Segunda fase</h2>
+        <h3>Grupo E</h3>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in grupo_e2_jogos %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in grupo_e2_jogos %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+        <br>
+        <table class="pc"> 
+            {% include 'include/classificacao_th_pc.html' %}    
+            {% for row in grupo_e2_classificacao %}
+            {% include 'include/classificacao_td_pc.html' %}        
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/classificacao_th_mobile.html' %}    
+          {% for row in grupo_e2_classificacao %}
+          {% include 'include/classificacao_td_mobile.html' %}        
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      {% if grupo_f2_jogos|length %}
+        <h3>Grupo F</h3>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in grupo_f2_jogos %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in grupo_f2_jogos %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+        <br>
+        <table class="pc"> 
+            {% include 'include/classificacao_th_pc.html' %}    
+            {% for row in grupo_f2_classificacao %}
+            {% include 'include/classificacao_td_pc.html' %}        
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/classificacao_th_mobile.html' %}    
+          {% for row in grupo_f2_classificacao %}
+          {% include 'include/classificacao_td_mobile.html' %}        
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+
+      
+
+      
+
+      
+
+      
+      {% if qf|length %}
+        <h2>Quartas de finais</h2>      
+        <table class="pc"> 
+          {% include 'include/partidas_th_pc.html' %}
+          {% for row in qf %}
+          {% include 'include/partidas_td_pc.html' %}
+          {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in qf %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      {% if sf|length %}
+        <h2>Semifinais</h2>      
+        <table class="pc"> 
+          {% include 'include/partidas_th_pc.html' %}
+          {% for row in sf %}
+          {% include 'include/partidas_td_pc.html' %}
+          {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in sf %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+
+      {% if final|length %}
+        <h2>Final</h2>      
+        <table class="pc"> 
+          {% include 'include/partidas_th_pc.html' %}
+          {% for row in final %}
+          {% include 'include/partidas_td_pc.html' %}
+          {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in final %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      
+
+      {% include 'include/campeao.html' %}
+    </div>
+
+    {% include 'include/footer.html' %}
+
+    
+
+
+    
+
+
+
+  </body>
+</html>
