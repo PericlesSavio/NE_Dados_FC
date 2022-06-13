@@ -39,7 +39,7 @@ def partidas(competicao = 0, ano = 0, grupo = 0, fase = 0, clube = 0):
     jogos = jogos[jogos['Grupo'] == grupo] if grupo != 0 else jogos
     jogos = jogos[jogos['Fase'] == fase] if fase != 0 else jogos
     jogos = jogos[jogos['ID'].str.contains(clube)] if clube != 0 else jogos
-    jogos = jogos.sort_values(['Data'], ascending = [False]) if clube != 0 else jogos.sort_values(['Data'], ascending = [True])
+    #jogos = jogos.sort_values(['Data'], ascending = [False]) if clube != 0 else jogos.sort_values(['Data'], ascending = [True])
 
     return jogos
 
@@ -243,6 +243,7 @@ def ne1997():
 
         regulamento = 'O campeonato seria disputado em sistema mata-mata, começando com oitavas-de-final. Fortaleza e Ceará disputariam a fase preliminar para decidir qual time entraria de fato no certame.',
 
+        of=partidas(competicao, ano, 0, 'Oitavas de final').to_dict('records'),
         qf=partidas(competicao, ano, 0, 'Quartas de final').to_dict('records'),
         sf=partidas(competicao, ano, 0, 'Semifinal').to_dict('records'),
         final=partidas(competicao, ano, 0, 'Final').to_dict('records'),
