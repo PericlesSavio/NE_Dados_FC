@@ -121,7 +121,7 @@ def campeao(ano, competicao):
     lista_campeoes2['titulos'] = 1 
     lista_campeoes2 = lista_campeoes2.groupby(['clube']).sum().reset_index().drop(columns=['ano'])
     clube_campeao = pd.merge(left=clube_campeao, right=lista_campeoes2, left_on='clube', right_on='clube')[['clube', 'titulos']]
-    return pd.merge(left=clube_campeao, right=lista_clubes, left_on='clube', right_on='clube')[['clube', 'completo', 'titulos']]
+    return pd.merge(left=clube_campeao, right=lista_clubes, left_on='clube', right_on='clube')[['clube', 'completo', 'titulos', 'escudo']]
 
 def artilharia(competicao = 0, ano = 0):
     artilharia = pd.merge(left = lista_artilharia, right = lista_jogos, left_on='id_jogo', right_on='id_jogo')
