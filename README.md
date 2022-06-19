@@ -2,4 +2,4 @@
 Link: [https://ne-dados-fc.vercel.app/](https://ne-dados-fc.vercel.app/)
 
 ### Competições
-* Copa do Nordeste: 1994-2001
+* Copa do Nordeste: 1994-2002
