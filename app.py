@@ -432,6 +432,42 @@ def ne2002():
             empate_com_gols = pts_empate_com_gols, clube = campeao(ano, competicao).iloc[0,0]).head(1).to_dict('records')
     )
 
+@app.route('/competicoes/ne/2003')
+def ne2003():
+    url = 'ne'
+    ano = 2003
+    competicao = 'Copa do Nordeste'
+    pts_empate_sem_gols = 1
+    pts_empate_com_gols = 1
+    pts_vitoria = 3
+
+    return render_template('/'+url+'/ne.html', #'/'+url+'/'+str(ano)+'.html',
+        url = url,
+        title = competicao,
+        edicao=ano,
+
+        n_participantes = dados(competicao, ano)['Participantes'],
+        n_partidas = dados(competicao, ano)['Nº de partidas'],
+        total_jogos = dados(competicao, ano)['Total de gols'],
+        media_gols = dados(competicao, ano)['Média de gols'],
+        periodo = dados(competicao, ano)['Período'],
+        participantes=participacoes(ano, competicao).to_dict('records'),
+
+        regulamento = 'Como diversos clubes da região se recusaram a participar dessa edição da Copa, o regulamento teve de ser moldado de forma que alguns times apenas entrassem no decorrer do certame. Assim, Vitória, CRB, CSA e Fluminense esperariam os vencedores dos primeiros confrontos para, então, poderem participar. O esquema seria em mata-mata. Nas primeira e segunda fases, teriam-se apenas jogos de ida e nas semifinais e final os jogos de volta seriam obrigatórios. Na final, em caso de empate no resultado agregado, seria declarado campeã a equipe com melhor campanha no certame.',
+
+        primeira_fase_jogos2 = partidas(competicao, ano, 0, 'Primeira fase').to_dict('records'),
+
+        qf=partidas(competicao, ano, 0, 'Quartas de final').to_dict('records'),
+        sf=partidas(competicao, ano, 0, 'Semifinal').to_dict('records'),
+        final=partidas(competicao, ano, 0, 'Final').to_dict('records'),
+        
+        campeao = campeao(ano, competicao).to_dict('records'),
+        titulos = campeao(ano, competicao)['titulos'].to_string().replace("0    ", ""),        
+        campanha = classificacao(
+            competicao = competicao, ano = ano, grupo = 0, fase = 0, vitoria = pts_vitoria, empate_sem_gols = pts_empate_sem_gols,
+            empate_com_gols = pts_empate_com_gols, clube = campeao(ano, competicao).iloc[0,0]).head(1).to_dict('records'),
+    )
+
 
 @app.route('/competicoes/ne/1994/gols')
 def test():
