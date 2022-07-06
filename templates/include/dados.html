@@ -31,7 +31,7 @@
     </tr>
     {% for row in participantes %}
     <tr>        
-        <td>{{ row.Clube }}</td>
+        <td><a href="{{url_for('clube_route', clube=row.slug )}}">{{ row.Clube }}</a></td>
         <td>{{ row.Participações }}</td>
     </tr>
     {% endfor %}

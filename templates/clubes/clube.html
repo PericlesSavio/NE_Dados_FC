@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ clube }}</title>
+    <link rel='stylesheet' href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+  </head>
+  <body>
+
+    {% include 'include/title_clube.html' %}
+  
+    <div class="box">
+
+      <div class="escudo">
+        <img src="../../static/escudos/{{ escudo }}.png">
+        <p>{{ clube }}</p>
+      </div>
+
+      <div class="centro">
+        <p>{{ fundacao }}</p>
+        <p>{{ cidade }} / {{ estado }}</p>
+      </div>
+
+      {% if geral|length %}
+        <h2>Geral</h2>
+        <table class="pc">
+            {% include 'include/clube_classificacao_th_pc.html' %}
+            {% for row in geral %}
+            {% include 'include/clube_classificacao_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/clube_classificacao_th_mobile.html' %}
+          {% for row in geral %}
+          {% include 'include/clube_classificacao_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      {% if copa_ne|length %}
+        <h2>Copa do Nordeste</h2>
+        <table class="pc">
+            {% include 'include/clube_classificacao_th_pc.html' %}
+            {% for row in copa_ne %}
+            {% include 'include/clube_classificacao_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/clube_classificacao_th_mobile.html' %}
+          {% for row in copa_ne %}
+          {% include 'include/clube_classificacao_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      <div class="centro">
+        <small>As informações refletem o que está registrado no banco de dados.</small>
+      </div>
+
+    </div>
+
+    {% include 'include/footer.html' %}
+  </body>
+</html>

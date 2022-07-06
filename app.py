@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 import pandas as pd
 
-#base
+#dados
 lista_jogos = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Jogos')
 lista_jogos['data'] = pd.to_datetime(lista_jogos['data']).dt.date
 lista_clubes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Clubes')
@@ -94,7 +94,7 @@ def classificacao(competicao = 0, ano = 0, grupo = 0, fase = 0, vitoria = 3, emp
     classificacao = classificacao[classificacao['Ano'] == ano] if ano != 0 else classificacao
     classificacao = classificacao[classificacao['Grupo'] == grupo] if grupo != 0 else classificacao
     classificacao = classificacao[classificacao['Fase'] == fase] if fase != 0 else classificacao
-    classificacao = classificacao[classificacao['id_jogo'].str.contains(clube)] if clube != 0 else classificacao
+    classificacao = classificacao[classificacao['Clube'].str.contains(clube)] if clube != 0 else classificacao
     classificacao = classificacao.sort_values(['Pts', 'Saldo'], ascending = [False, False])
     classificacao = classificacao.groupby(['Clube']).sum().reset_index().sort_values(['Pts', 'V', 'Saldo'], ascending = [False, False, False]).drop(columns=['Ano']).reset_index().drop('index', axis=1)
     classificacao.insert(0, 'Pos', classificacao.index + 1)
@@ -112,7 +112,7 @@ def participacoes(ano, competicao):
     participacoes = pd.merge(left=participacoes, right=n_participacoes, left_on='mandante', right_on='index')
     participacoes = participacoes.drop(columns=['ano', 'index'])
     participacoes.columns = ['Clube', 'Participações']    
-    return participacoes.sort_values(['Clube'])
+    return pd.merge(left=participacoes, right=lista_clubes, left_on='Clube', right_on='clube')[['Clube', 'Participações', 'slug']].sort_values(['Clube'])
 
 def campeao(ano, competicao):
     lista_campeoes2 = lista_campeoes[lista_campeoes['competicao'] == competicao]
@@ -121,7 +121,7 @@ def campeao(ano, competicao):
     lista_campeoes2['titulos'] = 1 
     lista_campeoes2 = lista_campeoes2.groupby(['clube']).sum().reset_index().drop(columns=['ano'])
     clube_campeao = pd.merge(left=clube_campeao, right=lista_campeoes2, left_on='clube', right_on='clube')[['clube', 'titulos']]
-    return pd.merge(left=clube_campeao, right=lista_clubes, left_on='clube', right_on='clube')[['clube', 'completo', 'titulos', 'escudo']]
+    return pd.merge(left=clube_campeao, right=lista_clubes, left_on='clube', right_on='clube')[['clube', 'completo', 'titulos', 'slug']]
 
 def artilharia(competicao = 0, ano = 0):
     artilharia = pd.merge(left = lista_artilharia, right = lista_jogos, left_on='id_jogo', right_on='id_jogo')
@@ -150,8 +150,8 @@ def dados(competicao, ano):
         }
     return dados
 
-def clube(clube_completo):
-    clube = lista_clubes[lista_clubes['completo'] == clube_completo]
+def clube_info(clube_completo):
+    clube = lista_clubes[lista_clubes['slug'] == clube_completo]
     return clube
 
 def partida_dados(id):
@@ -159,10 +159,10 @@ def partida_dados(id):
     return partida
 
 
-
-
+#flask app
 app = Flask(__name__)
 
+## competições (copa do nordeste)
 @app.route('/')
 @app.route('/competicoes/')
 @app.route('/competicoes/ne/')
@@ -170,7 +170,6 @@ def index():
     return render_template('home.html',
         title = 'NE Dados FC'
     )
-
 
 @app.route('/competicoes/ne/1994')
 def ne1994():
@@ -468,12 +467,27 @@ def ne2003():
             empate_com_gols = pts_empate_com_gols, clube = campeao(ano, competicao).iloc[0,0]).head(1).to_dict('records'),
     )
 
+## clubes
+@app.route('/clubes/<clube>')
+def clube_route(clube):
+    slug = clube_info(clube)['slug'].iloc[0]
+    nome_completo = clube_info(clube)['completo'].iloc[0]
+    nome_curto = clube_info(clube)['clube'].iloc[0]
+    escudo = clube_info(clube)['slug'].iloc[0]
+    fundacao = clube_info(clube)['fundacao'].iloc[0]
+    cidade = clube_info(clube)['cidade'].iloc[0]
+    estado = clube_info(clube)['estado'].iloc[0]
 
-@app.route('/competicoes/ne/1994/gols')
-def test():
-    url = 'NE' 
-    return render_template('/'+url+'/test.html',
-        title = 'Futebol Pernambucano'
+    return render_template('/clubes/clube.html',
+        slug = slug,
+        clube = nome_completo,
+        nome_curto = nome_curto,
+        escudo = escudo,
+        fundacao = fundacao,
+        cidade = cidade,
+        estado = estado,
+        geral = classificacao(competicao = 0, ano = 0, grupo = 0, fase = 0, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = nome_curto).to_dict('records'),
+        copa_ne = classificacao(competicao = 'Copa do Nordeste', ano = 0, grupo = 0, fase = 0, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = nome_curto).to_dict('records'),
     )
 
 

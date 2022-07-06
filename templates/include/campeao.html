@@ -1,7 +1,7 @@
 <h2>Campeão</h2>
-<div class="campeao">
+<div class="escudo">
     {% for row in campeao %}    
-        <img src="../../static/escudos/{{ row.escudo }}.png">
+        <img src="../../static/escudos/{{ row.slug }}.png">
         <p>{{ row.completo }}</p>
         <p>{{ row.titulos }}º título</p>
     {% endfor %}
