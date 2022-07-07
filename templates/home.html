@@ -8,10 +8,9 @@
 
     <h2>Competições</h2>
     <div class="grid-container">
-
         <a href="/competicoes/ne/1994">
             <div>
-                <img src="https://static.sbt.com.br/media/playlist/20180227142934/20181211164839/20190108115933.jpg" style="height:100px">
+                <img src="/static/copa_ne.png" style="height:100px">
                 <br>
                 Copa do Nordeste - 1994
             </div>
@@ -19,7 +18,7 @@
 
         <a href="/competicoes/ne/1997">
             <div>
-                <img src="https://static.sbt.com.br/media/playlist/20180227142934/20181211164839/20190108115933.jpg" style="height:100px">
+                <img src="/static/copa_ne.png" style="height:100px">
                 <br>
                 Copa do Nordeste - 1997
             </div>
@@ -27,15 +26,23 @@
 
         <a href="/competicoes/ne/1998">
             <div>
-                <img src="https://static.sbt.com.br/media/playlist/20180227142934/20181211164839/20190108115933.jpg" style="height:100px">
+                <img src="/static/copa_ne.png" style="height:100px">
                 <br>
                 Copa do Nordeste - 1998
             </div>
         </a>
 
+        <a href="/competicoes/ne/1999">
+            <div>
+                <img src="/static/copa_ne.png" style="height:100px">
+                <br>
+                Copa do Nordeste - 1999
+            </div>
+        </a>
+
         <a href="/competicoes/ne/2000">
             <div>
-                <img src="https://static.sbt.com.br/media/playlist/20180227142934/20181211164839/20190108115933.jpg" style="height:100px">
+                <img src="/static/copa_ne.png" style="height:100px">
                 <br>
                 Copa do Nordeste - 2000
             </div>
@@ -43,7 +50,7 @@
 
         <a href="/competicoes/ne/2001">
             <div>
-                <img src="https://static.sbt.com.br/media/playlist/20180227142934/20181211164839/20190108115933.jpg" style="height:100px">
+                <img src="/static/copa_ne.png" style="height:100px">
                 <br>
                 Copa do Nordeste - 2001
             </div>
@@ -51,7 +58,7 @@
 
         <a href="/competicoes/ne/2002">
             <div>
-                <img src="https://static.sbt.com.br/media/playlist/20180227142934/20181211164839/20190108115933.jpg" style="height:100px">
+                <img src="/static/copa_ne.png" style="height:100px">
                 <br>
                 Copa do Nordeste - 2002
             </div>
@@ -59,16 +66,48 @@
 
         <a href="/competicoes/ne/2003">
             <div>
-                <img src="https://static.sbt.com.br/media/playlist/20180227142934/20181211164839/20190108115933.jpg" style="height:100px">
+                <img src="/static/copa_ne.png" style="height:100px">
                 <br>
                 Copa do Nordeste - 2003
             </div>
         </a>
-        
-        
-     
+
+        <a href="/competicoes/ne/2010">
+            <div>
+                <img src="/static/copa_ne.png" style="height:100px">
+                <br>
+                Copa do Nordeste - 2010
+            </div>
+        </a>
+
+        <a href="/competicoes/ne/2013">
+            <div>
+                <img src="/static/copa_ne.png" style="height:100px">
+                <br>
+                Copa do Nordeste - 2013
+            </div>
+        </a>
 
     </div>
+
+    <h2>Clubes</h2>
+    <div class="grid-container">
+        
+        {% for row in lista_clubes %}
+            <div style="width:150px">
+                <a href="/clubes/{{ row.slug }}">
+                    <div>
+                        <img src="/static/escudos/{{ row.slug }}.png" style="height:100px">
+                        <br>
+                        {{ row.clube }}
+                    </div>
+                </a>            
+            </div>
+        {% endfor %}
+
+    </div>
+
+
 </section>
 
 

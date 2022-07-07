@@ -101,6 +101,7 @@ def classificacao(competicao = 0, ano = 0, grupo = 0, fase = 0, vitoria = 3, emp
     return classificacao
 
 def participacoes(ano, competicao):
+    lista_mundanca_clube = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Mudanças')
     lista_jogos2 = lista_jogos[lista_jogos['competicao'] == competicao]
     participacoes = lista_jogos2.groupby(['mandante', 'ano']).sum().reset_index().drop(columns=['gol_m', 'gol_v'])
     clubes_participacoes = participacoes[participacoes['ano'] <= ano]
@@ -111,8 +112,17 @@ def participacoes(ano, competicao):
     n_participacoes = pd.DataFrame(clubes_participacoes['mandante'].value_counts()).reset_index()
     participacoes = pd.merge(left=participacoes, right=n_participacoes, left_on='mandante', right_on='index')
     participacoes = participacoes.drop(columns=['ano', 'index'])
-    participacoes.columns = ['Clube', 'Participações']    
-    return pd.merge(left=participacoes, right=lista_clubes, left_on='Clube', right_on='clube')[['Clube', 'Participações', 'slug']].sort_values(['Clube'])
+    participacoes.columns = ['clube', 'participações']    
+    participacoes = pd.merge(left=participacoes, right=lista_clubes, left_on='clube', right_on='clube', how='left').sort_values(['clube'])
+    participacoes = pd.merge(left=participacoes, right=lista_mundanca_clube, left_on='completo', right_on='clube', how='left').fillna('')
+    participacoes = pd.DataFrame({
+        'Clube': participacoes['clube_x'],
+        'Completo': participacoes['completo'],
+        'Participações': participacoes['participações'],
+        'Slug': participacoes['slug'],
+        'Obs': participacoes['obs']
+    })    
+    return participacoes
 
 def campeao(ano, competicao):
     lista_campeoes2 = lista_campeoes[lista_campeoes['competicao'] == competicao]
@@ -166,9 +176,11 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/competicoes/')
 @app.route('/competicoes/ne/')
-def index():    
+@app.route('/clubes/')
+def index():  
     return render_template('home.html',
-        title = 'NE Dados FC'
+        title = 'NE Dados FC',
+        lista_clubes = lista_clubes.to_dict('records'),
     )
 
 @app.route('/competicoes/ne/1994')
@@ -297,6 +309,54 @@ def ne1998():
             competicao, ano, 'Grupo D', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
         grupo_e2_jogos = partidas(competicao, ano, 'Grupo C', 'Primeira fase').to_dict('records'),
         grupo_f2_jogos = partidas(competicao, ano, 'Grupo D', 'Primeira fase').to_dict('records'),
+
+        qf=partidas(competicao, ano, 0, 'Quartas de final').to_dict('records'),
+        sf=partidas(competicao, ano, 0, 'Semifinal').to_dict('records'),
+        final=partidas(competicao, ano, 0, 'Final').to_dict('records'),
+        
+        campeao = campeao(ano, competicao).to_dict('records'),
+        titulos = campeao(ano, competicao)['titulos'].to_string().replace("0    ", ""),        
+        campanha = classificacao(
+            competicao = competicao, ano = ano, grupo = 0, fase = 0, vitoria = pts_vitoria, empate_sem_gols = pts_empate_sem_gols,
+            empate_com_gols = pts_empate_com_gols, clube = campeao(ano, competicao).iloc[0,0]).head(1).to_dict('records'),
+    )
+
+@app.route('/competicoes/ne/1999')
+def ne1999():
+    url = 'ne'
+    ano = 1999
+    competicao = 'Copa do Nordeste'
+    pts_empate_sem_gols = 1
+    pts_empate_com_gols = 1
+    pts_vitoria = 3
+
+    return render_template('/'+url+'/ne.html',
+        url = url,
+        title = competicao,
+        edicao=ano,
+
+        n_participantes = dados(competicao, ano)['Participantes'],
+        n_partidas = dados(competicao, ano)['Nº de partidas'],
+        total_jogos = dados(competicao, ano)['Total de gols'],
+        media_gols = dados(competicao, ano)['Média de gols'],
+        periodo = dados(competicao, ano)['Período'],
+        participantes=participacoes(ano, competicao).to_dict('records'),
+
+        regulamento = 'Os 16 clubes se dividiriam em 4 grupos com 4 participantes cada. Os 2 melhores classificados de cada grupo avançariam para as quartas-de-final. Os vencedores para as semi-finais e, por fim, para a grande final. Todas as fases teriam jogos de ida e volta.',
+
+        grupo_a_classificacao = classificacao(
+            competicao, ano, 'Grupo A', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),        
+        grupo_b_classificacao = classificacao(
+            competicao, ano, 'Grupo B', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),        
+        grupo_c_classificacao = classificacao(
+            competicao, ano, 'Grupo C', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),        
+        grupo_d_classificacao = classificacao(
+            competicao, ano, 'Grupo D', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+
+        grupo_a_jogos = partidas(competicao, ano, 'Grupo A', 'Primeira fase').to_dict('records'),
+        grupo_b_jogos = partidas(competicao, ano, 'Grupo B', 'Primeira fase').to_dict('records'),
+        grupo_c_jogos = partidas(competicao, ano, 'Grupo C', 'Primeira fase').to_dict('records'),
+        grupo_d_jogos = partidas(competicao, ano, 'Grupo D', 'Primeira fase').to_dict('records'),
 
         qf=partidas(competicao, ano, 0, 'Quartas de final').to_dict('records'),
         sf=partidas(competicao, ano, 0, 'Semifinal').to_dict('records'),
@@ -467,9 +527,95 @@ def ne2003():
             empate_com_gols = pts_empate_com_gols, clube = campeao(ano, competicao).iloc[0,0]).head(1).to_dict('records'),
     )
 
+@app.route('/competicoes/ne/2010')
+def ne2010():
+    url = 'ne'
+    ano = 2010
+    competicao = 'Copa do Nordeste'
+    pts_empate_sem_gols = 1
+    pts_empate_com_gols = 1
+    pts_vitoria = 3
+
+    return render_template('/'+url+'/ne.html', #'/'+url+'/'+str(ano)+'.html',
+        url = url,
+        title = competicao,
+        edicao=ano,
+
+        n_participantes = dados(competicao, ano)['Participantes'],
+        n_partidas = dados(competicao, ano)['Nº de partidas'],
+        total_jogos = dados(competicao, ano)['Total de gols'],
+        media_gols = dados(competicao, ano)['Média de gols'],
+        periodo = dados(competicao, ano)['Período'],
+        participantes=participacoes(ano, competicao).to_dict('records'),
+
+        regulamento = 'Os quinze clubes se enfrentam, todos contra todos, em jogos apenas de ida. Ao fim desses confrontos, os quatro clubes que mais pontuarem avançam à fase seguinte, que será disputada em mata-mata, começando por semifinais, também apenas com jogos de ida.',
+
+        primeira_fase_jogos = partidas(competicao, ano, 0, 'Primeira fase').to_dict('records'),
+        primeira_fase_classificacao = classificacao(
+            competicao, ano, 0, 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+
+        sf=partidas(competicao, ano, 0, 'Semifinal').to_dict('records'),
+        final=partidas(competicao, ano, 0, 'Final').to_dict('records'),
+        
+        campeao = campeao(ano, competicao).to_dict('records'),
+        titulos = campeao(ano, competicao)['titulos'].to_string().replace("0    ", ""),        
+        campanha = classificacao(
+            competicao = competicao, ano = ano, grupo = 0, fase = 0, vitoria = pts_vitoria, empate_sem_gols = pts_empate_sem_gols,
+            empate_com_gols = pts_empate_com_gols, clube = campeao(ano, competicao).iloc[0,0]).head(1).to_dict('records')
+    )
+
+@app.route('/competicoes/ne/2013')
+def ne2013():
+    url = 'ne'
+    ano = 2013
+    competicao = 'Copa do Nordeste'
+    pts_empate_sem_gols = 1
+    pts_empate_com_gols = 1
+    pts_vitoria = 3
+
+    return render_template('/'+url+'/ne.html',
+        url = url,
+        title = competicao,
+        edicao=ano,
+
+        n_participantes = dados(competicao, ano)['Participantes'],
+        n_partidas = dados(competicao, ano)['Nº de partidas'],
+        total_jogos = dados(competicao, ano)['Total de gols'],
+        media_gols = dados(competicao, ano)['Média de gols'],
+        periodo = dados(competicao, ano)['Período'],
+        participantes=participacoes(ano, competicao).to_dict('records'),
+
+        regulamento = 'Os 16 clubes se dividiriam em 4 grupos de 4 e, dentro de cada grupo, se enfrentariam em jogos de ida e volta. Os 2 melhores classificados de cada grupo avançariam para as quartas de finais.',
+
+        grupo_a_classificacao = classificacao(
+            competicao, ano, 'Grupo A', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),        
+        grupo_b_classificacao = classificacao(
+            competicao, ano, 'Grupo B', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),        
+        grupo_c_classificacao = classificacao(
+            competicao, ano, 'Grupo C', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),        
+        grupo_d_classificacao = classificacao(
+            competicao, ano, 'Grupo D', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+
+        grupo_a_jogos = partidas(competicao, ano, 'Grupo A', 'Primeira fase').to_dict('records'),
+        grupo_b_jogos = partidas(competicao, ano, 'Grupo B', 'Primeira fase').to_dict('records'),
+        grupo_c_jogos = partidas(competicao, ano, 'Grupo C', 'Primeira fase').to_dict('records'),
+        grupo_d_jogos = partidas(competicao, ano, 'Grupo D', 'Primeira fase').to_dict('records'),
+
+        qf=partidas(competicao, ano, 0, 'Quartas de final').to_dict('records'),
+        sf=partidas(competicao, ano, 0, 'Semifinal').to_dict('records'),
+        final=partidas(competicao, ano, 0, 'Final').to_dict('records'),
+        
+        campeao = campeao(ano, competicao).to_dict('records'),
+        titulos = campeao(ano, competicao)['titulos'].to_string().replace("0    ", ""),        
+        campanha = classificacao(
+            competicao = competicao, ano = ano, grupo = 0, fase = 0, vitoria = pts_vitoria, empate_sem_gols = pts_empate_sem_gols,
+            empate_com_gols = pts_empate_com_gols, clube = campeao(ano, competicao).iloc[0,0]).head(1).to_dict('records'),
+    )
+
+
 ## clubes
 @app.route('/clubes/<clube>')
-def clube_route(clube):
+def clubes(clube):
     slug = clube_info(clube)['slug'].iloc[0]
     nome_completo = clube_info(clube)['completo'].iloc[0]
     nome_curto = clube_info(clube)['clube'].iloc[0]
