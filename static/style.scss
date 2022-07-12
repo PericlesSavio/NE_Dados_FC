@@ -115,7 +115,8 @@ table {
 
 th{
   background-color: $color-2; 
-  color:#000000; 
+  color:#000000;
+  font-size: 0.9rem;
 }
 
 tr:nth-child(odd) {
@@ -157,6 +158,10 @@ tr:hover {
 
 .w-1-5rem {
   min-width: 1.5rem;
+}
+
+.w-3rem {
+  width: 3rem;
 }
 
 .w-4rem {
