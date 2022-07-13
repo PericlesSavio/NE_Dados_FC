@@ -13,9 +13,114 @@
     {% include 'include/title_n3.html' %}  
   
     <div class="box">
-
       {% include 'include/dados.html' %}
 
+      <!--Primeira fase (Pré)-->
+      {% if pre1|length %}
+        <h2>Primeira fase (Pré-Copa do Nordeste)</h2>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in pre1 %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in pre1 %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      {% if pre1_2|length %}
+        <h2>Primeira fase (Pré-Copa do Nordeste)</h2>
+        <table class="pc"> 
+            {% include 'include/matamata_th_pc.html' %}
+            {% for row in pre1_2 %}
+            {% include 'include/matamata_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/matamata_th_mobile.html' %}
+          {% for row in pre1_2 %}
+          {% include 'include/matamata_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      <!--Segunda fase (Pré)-->
+      {% if pre2|length %}
+        <h2>Segunda fase (Pré-Copa do Nordeste)</h2>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in pre2 %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in pre2 %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+      
+      {% if pre2_2|length %}
+        <h2>Segunda fase (Pré-Copa do Nordeste)</h2>
+        <table class="pc"> 
+            {% include 'include/matamata_th_pc.html' %}
+            {% for row in pre2_2 %}
+            {% include 'include/matamata_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/matamata_th_mobile.html' %}
+          {% for row in pre2_2 %}
+          {% include 'include/matamata_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      <!--Terceira fase (Pré)-->
+      {% if pre3|length %}
+        <h2>Terceira fase (Pré-Copa do Nordeste)</h2>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in pre3 %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in pre3 %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      {% if pre3_2|length %}
+        <h2>Terceira fase (Pré-Copa do Nordeste)</h2>
+        <table class="pc"> 
+            {% include 'include/matamata_th_pc.html' %}
+            {% for row in pre3_2 %}
+            {% include 'include/matamata_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/matamata_th_mobile.html' %}
+          {% for row in pre3_2 %}
+          {% include 'include/matamata_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      <!---->
       {% if fase_preliminar_jogos|length %}
         <h2>Fase preliminar</h2>
         <table class="pc"> 
@@ -327,6 +432,7 @@
       {% else %}
       {% endif %}
 
+      <!-- OITAVAS DE FINAL-->
       {% if of|length %}
         <h2>Oitavas de finais</h2>      
         <table class="pc"> 
@@ -344,14 +450,24 @@
       {% else %}
       {% endif %}
 
+      {% if of2|length %}
+        <h2>Oitavas de finais</h2>      
+        <table class="pc"> 
+          {% include 'include/matamata_th_pc.html' %}
+          {% for row in of2 %}
+          {% include 'include/matamata_td_pc.html' %}
+          {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/matamata_th_mobile.html' %}
+          {% for row in og2 %}
+          {% include 'include/matamata_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
 
-      
-
-      
-
-      
-
-      
+      <!-- QUARTAS DE FINAL-->
       {% if qf|length %}
         <h2>Quartas de finais</h2>      
         <table class="pc"> 
@@ -369,6 +485,24 @@
       {% else %}
       {% endif %}
 
+      {% if qf2|length %}
+        <h2>Quartas de finais</h2>      
+        <table class="pc"> 
+          {% include 'include/matamata_th_pc.html' %}
+          {% for row in qf2 %}
+          {% include 'include/matamata_td_pc.html' %}
+          {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/matamata_th_mobile.html' %}
+          {% for row in qf2 %}
+          {% include 'include/matamata_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      <!-- SEMIFINAL-->
       {% if sf|length %}
         <h2>Semifinais</h2>      
         <table class="pc"> 
@@ -386,7 +520,24 @@
       {% else %}
       {% endif %}
 
+      {% if sf2|length %}
+        <h2>Semifinais</h2>      
+        <table class="pc"> 
+          {% include 'include/matamata_th_pc.html' %}
+          {% for row in sf2 %}
+          {% include 'include/matamata_td_pc.html' %}
+          {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/matamata_th_mobile.html' %}
+          {% for row in sf2 %}
+          {% include 'include/matamata_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
 
+      <!-- FINAL-->
       {% if final|length %}
         <h2>Final</h2>      
         <table class="pc"> 
@@ -403,7 +554,23 @@
         </table>
       {% else %}
       {% endif %}
-
+      
+      {% if final2|length %}
+        <h2>Final</h2>      
+        <table class="pc"> 
+          {% include 'include/matamata_th_pc.html' %}
+          {% for row in final2 %}
+          {% include 'include/matamata_td_pc.html' %}
+          {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/matamata_th_mobile.html' %}
+          {% for row in final2 %}
+          {% include 'include/matamata_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
       
 
       {% include 'include/campeao.html' %}

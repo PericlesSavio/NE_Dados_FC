@@ -9,6 +9,7 @@ $color-5: #ebf0f6; // linhas tabela
 $color-6: #111111; // fonte
 $color-7: #dddddd; // fonte
 $color-8: #777777; // bordas
+$color-9: #666666; // fonte
 
 
 /* geral */
@@ -129,6 +130,10 @@ tr:nth-child(even) {
 
 td, th {  
   padding: 0.5rem;  
+}
+
+td {
+  vertical-align: top;
 }
 
 tbody tr:last-of-type {
@@ -294,4 +299,5 @@ footer hr {
 
 td i {
   font-size: 0.8em;
+  color: $color-9;
 }

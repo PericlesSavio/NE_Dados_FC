@@ -124,6 +124,10 @@ td, th {
   padding: 0.5rem;
 }
 
+td {
+  vertical-align: top;
+}
+
 tbody tr:last-of-type {
   border-bottom: 3px solid #c4d0de;
 }
@@ -281,5 +285,6 @@ footer hr {
 
 td i {
   font-size: 0.8em;
+  color: #666666;
 }
 /*# sourceMappingURL=style.css.map */
