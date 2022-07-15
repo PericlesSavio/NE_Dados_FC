@@ -103,7 +103,7 @@ def classificacao(competicao = 0, ano = 0, grupo = 0, fase = 0, vitoria = 3, emp
     classificacao = classificacao[classificacao['Fase'] == fase] if fase != 0 else classificacao
     classificacao = classificacao[classificacao['Clube'].str.contains(clube)] if clube != 0 else classificacao
     classificacao = classificacao.sort_values(['Pts', 'Saldo'], ascending = [False, False])
-    classificacao = classificacao.groupby(['Clube']).sum().reset_index().sort_values(['Pts', 'V', 'Saldo'], ascending = [False, False, False]).drop(columns=['Ano']).reset_index().drop('index', axis=1)
+    classificacao = classificacao.groupby(['Clube']).sum().reset_index().sort_values(['Pts', 'V', 'Saldo', 'GP'], ascending = [False, False, False, False]).drop(columns=['Ano']).reset_index().drop('index', axis=1)
     classificacao.insert(0, 'Pos', classificacao.index + 1)
     return classificacao
 
@@ -263,7 +263,7 @@ app = Flask(__name__)
 ## competições (copa do nordeste)
 @app.route('/')
 @app.route('/competicoes/')
-@app.route('/competicoes/ne/')
+#@app.route('/competicoes/ne/')
 @app.route('/clubes/')
 def index():  
     return render_template('home.html',
@@ -271,6 +271,22 @@ def index():
         lista_clubes = lista_clubes.to_dict('records'),
     )
 
+@app.route('/competicoes/<sigla_competicao>')
+@app.route('/competicoes/<sigla_competicao>/')
+def comp(sigla_competicao):
+
+    # parâmetros
+    competicao = lista_competicoes[lista_competicoes['codigo'] == sigla_competicao]['competicao'][0]
+
+    return render_template('/comp.html',
+
+        title = competicao,
+
+        # dados
+        classificacao_geral = classificacao(competicao, ano = 0, grupo = 0, fase = 0, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = 0).to_dict('records'),
+    )
+
+## competições
 @app.route('/competicoes/<sigla_competicao>/<edicao>')
 def ne(edicao, sigla_competicao):
 
@@ -293,8 +309,6 @@ def ne(edicao, sigla_competicao):
 
         title = competicao,
         edicao=ano,
-
-        x=mata_mata(competicao, ano).to_dict('records'),
 
         # dados
         n_participantes = dados(competicao, ano)['Participantes'],
@@ -320,6 +334,7 @@ def ne(edicao, sigla_competicao):
 
         # fase preliminar
         fase_preliminar_jogos = partidas(competicao, ano, 'Único', 'Fase preliminar').to_dict('records'),
+        fase_preliminar_jogos2 = mata_mata(competicao, ano, fase='Fase preliminar (Pré)').to_dict('records'),
 
         # primeira fase
         primeira_fase_jogos = partidas(competicao, ano, 'Único', 'Primeira fase').to_dict('records'),

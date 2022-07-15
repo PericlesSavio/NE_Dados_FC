@@ -120,7 +120,7 @@
       {% else %}
       {% endif %}
 
-      <!---->
+      <!--Fase Preliminar-->
       {% if fase_preliminar_jogos|length %}
         <h2>Fase preliminar</h2>
         <table class="pc"> 
@@ -137,6 +137,27 @@
         </table>
       {% else %}
       {% endif %}
+
+      {% if fase_preliminar_jogos2|length %}
+        <h2>Fase preliminar (Pré-Copa do Nordeste)</h2>
+        <table class="pc"> 
+            {% include 'include/matamata_th_pc.html' %}
+            {% for row in fase_preliminar_jogos2 %}
+            {% include 'include/matamata_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/matamata_th_mobile.html' %}
+          {% for row in fase_preliminar_jogos2 %}
+          {% include 'include/matamata_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+
+
+
 
       {% if primeira_fase_jogos|length %}
         <h2>Primeira fase</h2>
