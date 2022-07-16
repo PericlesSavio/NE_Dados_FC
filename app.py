@@ -9,6 +9,7 @@ lista_campeoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Camp
 lista_artilharia = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Artilharia')
 lista_jogadores = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Jogadores')
 lista_observacoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Observações')
+lista_colocacoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Posições')
 lista_competicoes = pd.DataFrame(
     columns=['codigo', 'competicao'],
     data = ([
@@ -256,6 +257,16 @@ def mata_mata(competicao = 0, ano = 0, grupo = 0, fase = 0, clube = 0):
 
     return mata_mata2
 
+def colocacao(competicao, ano, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1):    
+    lista_colocacoes2 = lista_colocacoes[lista_colocacoes['competicao'] == competicao]
+    lista_colocacoes2 = lista_colocacoes2[lista_colocacoes2['ano'] == ano]
+
+    cla = classificacao(competicao, ano = ano, grupo = 0, fase = 0, vitoria = vitoria, empate_sem_gols = empate_sem_gols, empate_com_gols = empate_com_gols, clube = 0)
+    cla['Aproveitamento'] = round(cla['Pts'] / (cla['J']*3)*100, 2)
+
+    pos = pd.merge(left = lista_colocacoes2, right = cla, left_on='clube', right_on = 'Clube')
+    return pos.drop(['clube', 'Pos'], axis = 1)
+
 
 #flask app
 app = Flask(__name__)
@@ -323,6 +334,8 @@ def ne(edicao, sigla_competicao):
         campanha = classificacao(
             competicao = competicao, ano = ano, grupo = 0, fase = 0, vitoria = pts_vitoria, empate_sem_gols = pts_empate_sem_gols,
             empate_com_gols = pts_empate_com_gols, clube = campeao(ano, competicao).iloc[0,0]).head(1).to_dict('records'),
+        classificacao_final = colocacao(competicao, ano, vitoria = pts_vitoria,
+            empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
 
         # fase preliminar (pré)
         pre1=partidas(competicao, ano, 0, 'Primeira fase (Pré)', 'Único').to_dict('records'),
