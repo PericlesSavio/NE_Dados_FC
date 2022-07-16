@@ -1,0 +1,54 @@
+<h2>Classificação Final</h2>
+
+    <table class="pc"> 
+        <tr>
+            <th class="w-1-5rem">#</th>
+            <th class="w-12rem">Clube</th>
+            <th class="w-1-5rem">Pts</th>
+            <th class="w-1-5rem">J</th>
+            <th class="w-1-5rem">V</th>
+            <th class="w-1-5rem">E</th>
+            <th class="w-1-5rem">D</th>
+            <th class="w-1-5rem">GP</th>
+            <th class="w-1-5rem">GC</th>
+            <th class="w-1-5rem">+/-</th>
+            <th class="w-1-5rem">%</th>
+        </tr> 
+        {% for row in classificacao_final %}
+        <tr>
+            <td>{{ row.pos }}</td>
+            <td>{{ row.Clube }}</td>
+            <td>{{ row.Pts }}</td>
+            <td>{{ row.J }}</td>
+            <td>{{ row.V }}</td>
+            <td>{{ row.E }}</td>
+            <td>{{ row.D }}</td>
+            <td>{{ row.GP }}</td>
+            <td>{{ row.GC }}</td>
+            <td>{{ row.Saldo }}</td>
+            <td>{{ row.Aproveitamento }}</td>
+        </tr>      
+        {% endfor %}
+    </table>
+    <table class="mobile">
+        <tr>
+            <th class="w-8rem">Clube</th>
+            <th>Pts</th>
+            <th>J</th>
+            <th class="w-4rem">V - E - D</th>
+            <th class="w-4rem">GP - GC (+/-)</th>
+        </tr>
+        {% for row in classificacao_final %}
+        <tr>        
+            <td>{{ row.Clube }}</td>
+            <td>{{ row.Pts }}</td>
+            <td>{{ row.J }}</td>
+            <td>{{ row.V }} - {{ row.E }} - {{ row.D }}</td>
+            <td>{{ row.GP }} - {{ row.GC }} ({{ row.Saldo }})</td>
+        </tr>       
+        {% endfor %}
+    </table>
+
+
+
+</div>
