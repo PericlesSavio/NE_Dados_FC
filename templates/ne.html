@@ -453,6 +453,50 @@
       {% else %}
       {% endif %}
 
+      {% if grupo_a_cruzado_classificacao|length %}
+        <h3>Primeira fase</h3>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in grupos_cruzados_jogos %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in grupos_cruzados_jogos %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+        <br>
+        <h3>Grupo A</h3>
+        <table class="pc"> 
+            {% include 'include/classificacao_th_pc.html' %}    
+            {% for row in grupo_a_cruzado_classificacao %}
+            {% include 'include/classificacao_td_pc.html' %}        
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/classificacao_th_mobile.html' %}    
+          {% for row in grupo_a_cruzado_classificacao %}
+          {% include 'include/classificacao_td_mobile.html' %}        
+          {% endfor %}
+        </table>
+        <h3>Grupo B</h3>
+        <table class="pc"> 
+            {% include 'include/classificacao_th_pc.html' %}    
+            {% for row in grupo_b_cruzado_classificacao %}
+            {% include 'include/classificacao_td_pc.html' %}        
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/classificacao_th_mobile.html' %}    
+          {% for row in grupo_b_cruzado_classificacao %}
+          {% include 'include/classificacao_td_mobile.html' %}        
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
       <!-- OITAVAS DE FINAL-->
       {% if of|length %}
         <h2>Oitavas de finais</h2>      

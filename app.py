@@ -179,7 +179,6 @@ def partida_dados(id):
     partida = lista_jogos[lista_jogos['id_jogo'] == id]
     return partida
 
-#x
 def mata_mata(competicao = 0, ano = 0, grupo = 0, fase = 0, clube = 0):
     jogos = pd.merge(left = lista_jogos, right = lista_observacoes, left_on='id_jogo', right_on='id_jogo', how='left')
 
@@ -257,7 +256,7 @@ def mata_mata(competicao = 0, ano = 0, grupo = 0, fase = 0, clube = 0):
 
     return mata_mata2
 
-def colocacao(competicao, ano, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1):    
+def colocacao(competicao, ano, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1):
     lista_colocacoes2 = lista_colocacoes[lista_colocacoes['competicao'] == competicao]
     lista_colocacoes2 = lista_colocacoes2[lista_colocacoes2['ano'] == ano]
 
@@ -267,6 +266,15 @@ def colocacao(competicao, ano, vitoria = 3, empate_sem_gols = 1, empate_com_gols
     pos = pd.merge(left = lista_colocacoes2, right = cla, left_on='clube', right_on = 'Clube')
     return pos.drop(['clube', 'Pos'], axis = 1)
 
+def grupos_cruzados(competicao, ano, fase, grupo):
+    lista_gruposcruzados = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Grupos Cruzados')
+    grupos = pd.merge(left=lista_gruposcruzados, right=classificacao(competicao = 0, ano = ano, grupo = 0, fase = fase, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = 0), left_on='clube', right_on='Clube')
+    grupos = grupos[grupos['competicao'] == competicao]
+    grupos = grupos[grupos['ano'] == ano]
+    grupos = grupos[grupos['grupo'] == grupo]
+    grupos = grupos.drop('Pos', axis=1)
+    grupos = grupos.rename(columns={'competicao': 'Competição', 'ano': 'Ano', 'grupo': 'Grupo', 'clube': 'Clube', 'pos': 'Pos'})
+    return grupos.sort_values('Pos')
 
 #flask app
 app = Flask(__name__)
@@ -316,10 +324,13 @@ def ne(edicao, sigla_competicao):
     
     competicao = lista_competicoes[lista_competicoes['codigo'] == sigla_competicao]['competicao'][0]
 
+    
+
     return render_template('/ne.html',
 
         title = competicao,
         edicao=ano,
+        url = sigla_competicao,
 
         # dados
         n_participantes = dados(competicao, ano)['Participantes'],
@@ -377,6 +388,10 @@ def ne(edicao, sigla_competicao):
         grupo_f_jogos = partidas(competicao, ano, 'Grupo F', 'Primeira fase').to_dict('records'),
         grupo_f_classificacao = classificacao(
             competicao, ano, 'Grupo F', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+
+        grupos_cruzados_jogos = partidas(competicao, ano, 0, 'Primeira fase').to_dict('records'),
+        grupo_a_cruzado_classificacao = grupos_cruzados(competicao, ano, fase = 'Primeira fase', grupo = 'A').to_dict('records'),
+        grupo_b_cruzado_classificacao = grupos_cruzados(competicao, ano, fase = 'Primeira fase', grupo = 'B').to_dict('records'),
 
         # segunda fase / mata-matas
         grupo_e2_jogos = partidas(competicao, ano, 'Grupo E', 'Segunda fase').to_dict('records'),
