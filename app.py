@@ -276,6 +276,22 @@ def grupos_cruzados(competicao, ano, fase, grupo):
     grupos = grupos.rename(columns={'competicao': 'Competição', 'ano': 'Ano', 'grupo': 'Grupo', 'clube': 'Clube', 'pos': 'Pos'})
     return grupos.sort_values('Pos')
 
+def segundos_colocados(competicao, ano, fase):
+    lista_sugundoscolocados = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Segundos Colocados')
+    lista_sugundoscolocados = lista_sugundoscolocados[lista_sugundoscolocados['competicao'] == competicao]
+    lista_sugundoscolocados = lista_sugundoscolocados[lista_sugundoscolocados['ano'] == ano]
+
+    grupos = lista_jogos[lista_jogos['fase'] == fase]
+    grupos = grupos[grupos['ano'] == ano]
+    grupos = grupos[['mandante', 'grupo']].drop_duplicates(subset=['mandante'])
+
+    classf = classificacao(competicao = competicao, ano = ano, grupo = 0, fase = fase, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = 0)
+    segundos = pd.merge(left=lista_sugundoscolocados, right=classf, left_on='clube', right_on='Clube').drop(['Pos'], axis=1)    
+    segundos = pd.merge(left=segundos, right=grupos, left_on='Clube', right_on='mandante')
+    segundos = segundos.rename(columns={'pos': 'Pos', 'grupo': 'Grupo'})
+    segundos['Grupo'] = segundos['Grupo'].apply(lambda x: x.replace('Grupo ', ''))
+    return segundos
+
 #flask app
 app = Flask(__name__)
 
@@ -392,6 +408,8 @@ def ne(edicao, sigla_competicao):
         grupos_cruzados_jogos = partidas(competicao, ano, 0, 'Primeira fase').to_dict('records'),
         grupo_a_cruzado_classificacao = grupos_cruzados(competicao, ano, fase = 'Primeira fase', grupo = 'A').to_dict('records'),
         grupo_b_cruzado_classificacao = grupos_cruzados(competicao, ano, fase = 'Primeira fase', grupo = 'B').to_dict('records'),
+
+        segundoscolocados = segundos_colocados(competicao, ano, 'Primeira fase').to_dict('records'),
 
         # segunda fase / mata-matas
         grupo_e2_jogos = partidas(competicao, ano, 'Grupo E', 'Segunda fase').to_dict('records'),
