@@ -43,6 +43,8 @@
 
       {% if copa_ne|length %}
         <h2>Copa do Nordeste</h2>
+        <p class="centro">Títulos: {{ ne_titulos }}</p>
+        <p class="centro">Participações: {{ ne_part }}</p>
         <table class="pc">
             {% include 'include/clube_classificacao_th_pc.html' %}
             {% for row in copa_ne %}

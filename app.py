@@ -292,6 +292,19 @@ def segundos_colocados(competicao, ano, fase):
     segundos['Grupo'] = segundos['Grupo'].apply(lambda x: x.replace('Grupo ', ''))
     return segundos
 
+def n_participacoes(competicao, clube):
+    participacoes = lista_jogos[lista_jogos['competicao'] == competicao]
+    participacoes = participacoes[participacoes['mandante'] == clube][['ano', 'mandante']].drop_duplicates().shape[0]
+    return participacoes
+
+def n_titulos(competicao, clube):
+    n__titulos = lista_campeoes[lista_campeoes['competicao'] == competicao]
+    n__titulos = n__titulos[n__titulos['clube'] == clube].shape[0]
+    return n__titulos
+
+
+
+
 #flask app
 app = Flask(__name__)
 
@@ -454,6 +467,9 @@ def clubes(clube):
         estado = estado,
         geral = classificacao(competicao = 0, ano = 0, grupo = 0, fase = 0, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = nome_curto).to_dict('records'),
         copa_ne = classificacao(competicao = 'Copa do Nordeste', ano = 0, grupo = 0, fase = 0, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = nome_curto).to_dict('records'),
+        ne_titulos = n_titulos('Copa do Nordeste', nome_curto),
+        ne_part = n_participacoes('Copa do Nordeste', nome_curto),
+
     )
 
 if __name__ == '__main__':
