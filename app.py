@@ -8,6 +8,7 @@ lista_clubes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Clubes
 lista_campeoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Campeões')
 lista_artilharia = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Artilharia')
 lista_jogadores = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Jogadores')
+lista_estadios = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Estádios')
 lista_observacoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Observações')
 lista_colocacoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Posições')
 lista_competicoes = pd.DataFrame(
@@ -49,7 +50,7 @@ def partidas(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, clube = 0
     jogos = jogos[jogos['Rodada'] == rodada] if rodada != 0 else jogos
     #jogos = jogos.sort_values(['Data'], ascending = [False]) if clube != 0 else jogos.sort_values(['Data'], ascending = [True])
 
-    return jogos
+    return pd.merge(left=jogos, right=lista_estadios, left_on='Local', right_on='estadio', how='left').drop(['completo', 'capacidade', 'cidade', 'estado', 'data_inauguracao', 'partida_inauguracao'], axis=1)
 
 def classificacao(competicao = 0, ano = 0, grupo = 0, fase = 0, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = 0):
     clasf1 = pd.DataFrame({
@@ -106,7 +107,7 @@ def classificacao(competicao = 0, ano = 0, grupo = 0, fase = 0, vitoria = 3, emp
     classificacao = classificacao.sort_values(['Pts', 'Saldo'], ascending = [False, False])
     classificacao = classificacao.groupby(['Clube']).sum().reset_index().sort_values(['Pts', 'V', 'Saldo', 'GP'], ascending = [False, False, False, False]).drop(columns=['Ano']).reset_index().drop('index', axis=1)
     classificacao.insert(0, 'Pos', classificacao.index + 1)
-    return classificacao
+    return pd.merge(left=classificacao, right=lista_clubes, left_on='Clube', right_on='clube', how='left').drop(['completo', 'clube', 'fundacao', 'cidade', 'estado'], axis=1)
 
 def participacoes(ano, competicao):
     lista_mundanca_clube = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Mudanças')
@@ -302,6 +303,11 @@ def n_titulos(competicao, clube):
     n__titulos = n__titulos[n__titulos['clube'] == clube].shape[0]
     return n__titulos
 
+def n_titulos_edicoes(competicao, clube):
+    n__titulos = lista_campeoes[lista_campeoes['competicao'] == competicao]
+    n__titulos = n__titulos[n__titulos['clube'] == clube]
+    return n__titulos
+
 
 
 
@@ -468,8 +474,28 @@ def clubes(clube):
         geral = classificacao(competicao = 0, ano = 0, grupo = 0, fase = 0, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = nome_curto).to_dict('records'),
         copa_ne = classificacao(competicao = 'Copa do Nordeste', ano = 0, grupo = 0, fase = 0, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = nome_curto).to_dict('records'),
         ne_titulos = n_titulos('Copa do Nordeste', nome_curto),
+        ne_titulos_edicoes = n_titulos_edicoes('Copa do Nordeste', nome_curto).to_dict('records'),
         ne_part = n_participacoes('Copa do Nordeste', nome_curto),
+    )
 
+## estádio
+@app.route('/estadios/<estadio>')
+def estadio(estadio):
+    slug = lista_estadios[lista_estadios['slug'] == 'reipele'].to_dict('records')[0]['slug']
+    completo = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['completo']
+    capacidade = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['capacidade']
+    cidade = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['cidade']
+    estado = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['estado']
+
+    return render_template('/estadios.html',
+        title = completo,
+        foto = slug,
+        nome_completo = completo,
+        capacidade = capacidade,
+        cidade = cidade,
+        estado = estado,
+        jogo_inauguracao = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['partida_inauguracao'],
+        data_inauguracao = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['data_inauguracao'],
     )
 
 if __name__ == '__main__':
