@@ -17,7 +17,7 @@
         {% for row in classificacao_final %}
         <tr>
             <td>{{ row.pos }}</td>
-            <td>{{ row.Clube }}</td>
+            <td><a href="{{url_for('clubes', clube=row.slug )}}">{{ row.Clube }}</a></td>
             <td>{{ row.Pts }}</td>
             <td>{{ row.J }}</td>
             <td>{{ row.V }}</td>
@@ -40,7 +40,7 @@
         </tr>
         {% for row in classificacao_final %}
         <tr>        
-            <td>{{ row.Clube }}</td>
+            <td><a href="{{url_for('clubes', clube=row.slug )}}">{{ row.Clube }}</a></td>
             <td>{{ row.Pts }}</td>
             <td>{{ row.J }}</td>
             <td>{{ row.V }} - {{ row.E }} - {{ row.D }}</td>

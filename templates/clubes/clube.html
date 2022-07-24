@@ -43,7 +43,16 @@
 
       {% if copa_ne|length %}
         <h2>Copa do Nordeste</h2>
-        <p class="centro">Títulos: {{ ne_titulos }}</p>
+        <p class="centro">
+          {% if ne_titulos == 0 %}
+          {% else %}
+            {{ ne_titulos }} títulos
+            {% for row in ne_titulos_edicoes %}
+              : <a href="{{url_for('ne', edicao=row.ano, sigla_competicao='ne' )}}">{{ row.ano }}</a>
+            {% endfor %}
+          {% endif %}
+        </p>
+
         <p class="centro">Participações: {{ ne_part }}</p>
         <table class="pc">
             {% include 'include/clube_classificacao_th_pc.html' %}
