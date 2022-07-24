@@ -25,6 +25,32 @@
       </div>
 
 
+      {% if jogo_inauguracao|length %}
+        <h2>Inauguração</h2>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in jogo_inauguracao %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in jogo_inauguracao %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+
+
+
+
+
+
+
+
+
     </div>
 
     {% include 'include/footer.html' %}

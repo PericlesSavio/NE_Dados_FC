@@ -4,5 +4,5 @@
     <td>{{ row.Mandante_Ida }}<br>{{ row.Mandante_Volta }}</td>
     <td>{{ row.Placar_Ida }} <i>{{ row.Obs_Ida }}</i><br>{{ row.Placar_Volta }}<br><i>{{ row.Obs_Volta }}</i></td>
     <td>{{ row.Visitante_Ida }}<br>{{ row.Visitante_Volta }}</td>
-    <td>{{ row.Local_Ida }}<br>{{ row.Local_Volta }}</td>
+    <td><a href="{{url_for('estadios', estadio=row.Slug_Local_Ida )}}">{{ row.Local_Ida }}</a><br><a href="{{url_for('estadios', estadio=row.Slug_Local_Volta )}}">{{ row.Local_Volta }}</a></td>
 </tr>

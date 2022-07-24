@@ -4,5 +4,5 @@
     <td>{{ row.Mandante }}</td>
     <td>{{ row.Placar }}<i> {{ row.Obs }}</i></td>
     <td>{{ row.Visitante }}</td>
-    <td>{{ row.Local }}</td>
+    <td><a href="{{url_for('estadios', estadio=row.slug )}}">{{ row.Local }}</a></td>
 </tr>

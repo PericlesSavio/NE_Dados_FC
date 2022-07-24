@@ -41,7 +41,7 @@ def partidas(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, clube = 0
 
     jogos = jogos.where(pd.notnull(jogos), '')
 
-    #arguments
+    #
     jogos = jogos[jogos['Competição'] == competicao] if competicao != 0 else jogos
     jogos = jogos[jogos['Ano'] == ano] if ano != 0 else jogos    
     jogos = jogos[jogos['Grupo'] == grupo] if grupo != 0 else jogos
@@ -50,7 +50,7 @@ def partidas(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, clube = 0
     jogos = jogos[jogos['Rodada'] == rodada] if rodada != 0 else jogos
     #jogos = jogos.sort_values(['Data'], ascending = [False]) if clube != 0 else jogos.sort_values(['Data'], ascending = [True])
 
-    return pd.merge(left=jogos, right=lista_estadios, left_on='Local', right_on='estadio', how='left').drop(['completo', 'capacidade', 'cidade', 'estado', 'data_inauguracao', 'partida_inauguracao'], axis=1)
+    return pd.merge(left=jogos, right=lista_estadios, left_on='Local', right_on='estadio', how='left').drop(['completo', 'estadio', 'capacidade', 'cidade', 'estado', 'data_inauguracao', 'partida_inauguracao'], axis=1)
 
 def classificacao(competicao = 0, ano = 0, grupo = 0, fase = 0, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = 0):
     clasf1 = pd.DataFrame({
@@ -98,7 +98,7 @@ def classificacao(competicao = 0, ano = 0, grupo = 0, fase = 0, vitoria = 3, emp
     classificacao.loc[(classificacao['GP'] == classificacao['GC']) & (classificacao['GP'] + classificacao['GC'] > 0), 'Pts'] = empate_com_gols
     classificacao.loc[classificacao['GP'] < classificacao['GC'], 'Pts'] = 0
 
-    #argumentos
+    #
     classificacao = classificacao[classificacao['Competição'] == competicao] if competicao != 0 else classificacao
     classificacao = classificacao[classificacao['Ano'] == ano] if ano != 0 else classificacao
     classificacao = classificacao[classificacao['Grupo'] == grupo] if grupo != 0 else classificacao
@@ -205,7 +205,9 @@ def mata_mata(competicao = 0, ano = 0, grupo = 0, fase = 0, clube = 0):
 
     jogos = jogos.where(pd.notnull(jogos), '')
 
-    #arguments
+    jogos = pd.merge(left=jogos, right=lista_estadios, left_on='Local', right_on='estadio', how='left').drop(['completo', 'estadio', 'capacidade', 'cidade', 'estado', 'data_inauguracao', 'partida_inauguracao'], axis=1)
+
+    #
     jogos = jogos[jogos['Competição'] == competicao] if competicao != 0 else jogos
     jogos = jogos[jogos['Ano'] == ano] if ano != 0 else jogos    
     jogos = jogos[jogos['Grupo'] == grupo] if grupo != 0 else jogos
@@ -229,6 +231,7 @@ def mata_mata(competicao = 0, ano = 0, grupo = 0, fase = 0, clube = 0):
         'Placar_Ida': mata_mata['Placar_x'],
         'Visitante_Ida': mata_mata['Visitante_x'],
         'Local_Ida': mata_mata['Local_x'],
+        'Slug_Local_Ida': mata_mata['slug_x'],
         'Obs_Ida': mata_mata['Obs_x'],
         'Confronto1_Ida': mata_mata['Confronto1_x'],
         'Confronto2_Ida': mata_mata['Confronto2_x'],
@@ -244,6 +247,7 @@ def mata_mata(competicao = 0, ano = 0, grupo = 0, fase = 0, clube = 0):
         'Placar_Volta': mata_mata['Placar_y'],
         'Visitante_Volta': mata_mata['Visitante_y'],
         'Local_Volta': mata_mata['Local_y'],
+        'Slug_Local_Volta': mata_mata['slug_y'],
         'Obs_Volta': mata_mata['Obs_y'],
         'Confronto1_Volta': mata_mata['Confronto1_y'],
         'Confronto2_Volta': mata_mata['Confronto2_y'],
@@ -463,7 +467,7 @@ def clubes(clube):
     cidade = clube_info(clube)['cidade'].iloc[0]
     estado = clube_info(clube)['estado'].iloc[0]
 
-    return render_template('/clubes/clube.html',
+    return render_template('/clube.html',
         slug = slug,
         clube = nome_completo,
         nome_curto = nome_curto,
@@ -480,22 +484,24 @@ def clubes(clube):
 
 ## estádio
 @app.route('/estadios/<estadio>')
-def estadio(estadio):
-    slug = lista_estadios[lista_estadios['slug'] == 'reipele'].to_dict('records')[0]['slug']
+def estadios(estadio):
+    slug = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['slug']
     completo = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['completo']
     capacidade = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['capacidade']
     cidade = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['cidade']
     estado = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['estado']
 
+    jogo_inauguracao = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['partida_inauguracao']
+    jogo_inauguracao2 = partidas(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, clube = 0)
+
     return render_template('/estadios.html',
         title = completo,
         foto = slug,
         nome_completo = completo,
-        capacidade = capacidade,
+        capacidade = int(capacidade),
         cidade = cidade,
         estado = estado,
-        jogo_inauguracao = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['partida_inauguracao'],
-        data_inauguracao = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['data_inauguracao'],
+        jogo_inauguracao = jogo_inauguracao2[jogo_inauguracao2['ID'] == jogo_inauguracao].to_dict('records'),
     )
 
 if __name__ == '__main__':
