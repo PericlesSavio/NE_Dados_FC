@@ -1,8 +1,8 @@
 <tr>
-    <td>{{ row.Data_Ida }}<br>{{ row.Data_Volta }}</td>
-    <td>{{ row.Rodada_Ida }}<br>{{ row.Rodada_Volta }}</td>
-    <td>{{ row.Mandante_Ida }}<br>{{ row.Mandante_Volta }}</td>
-    <td>{{ row.Placar_Ida }} <i>{{ row.Obs_Ida }}</i><br>{{ row.Placar_Volta }}<br><i>{{ row.Obs_Volta }}</i></td>
-    <td>{{ row.Visitante_Ida }}<br>{{ row.Visitante_Volta }}</td>
-    <td><a href="{{url_for('estadios', estadio=row.Slug_Local_Ida )}}">{{ row.Local_Ida }}</a><br><a href="{{url_for('estadios', estadio=row.Slug_Local_Volta )}}">{{ row.Local_Volta }}</a></td>
+    <td>{{ row.data_ida }}<br>{{ row.data_volta }}</td>
+    <td>{{ row.rodada_ida }}<br>{{ row.rodada_volta }}</td>
+    <td>{{ row.mandante_ida }}<br>{{ row.mandante_volta }}</td>
+    <td>{{ row.placar_ida }} <i>{{ row.obs_ida }}</i><br>{{ row.placar_volta }}<br><i>{{ row.obs_volta }}</i></td>
+    <td>{{ row.visitante_ida }}<br>{{ row.visitante_volta }}</td>
+    <td><a href="{{url_for('estadios', estadio=row.slug_local_ida )}}">{{ row.local_ida }}</a><br><a href="{{url_for('estadios', estadio=row.slug_local_volta )}}">{{ row.local_volta }}</a></td>
 </tr>

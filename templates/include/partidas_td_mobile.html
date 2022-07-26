@@ -1,4 +1,4 @@
 <tr>        
-    <td>{{ row.Data }}<br><br>Rodada {{ row.Rodada }}</td>
-    <td>{{ row.Mandante }} {{ row.Placar }} {{ row.Visitante }}<br><i>{{ row.Obs }}</i><br><a href="{{url_for('estadios', estadio=row.slug )}}">{{ row.Local }}</a></td>
+    <td>{{ row.data }}<br><br>Rodada {{ row.rodada }}</td>
+    <td>{{ row.mandante }} {{ row.gol_m }}-{{ row.gol_v }} {{ row.visitante }}<br><i>{{ row.obs }}</i><br><a href="{{url_for('estadios', estadio=row.slug_estadio )}}">{{ row.local }}</a></td>
 </tr>

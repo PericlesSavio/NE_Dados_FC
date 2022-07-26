@@ -19,95 +19,92 @@ lista_competicoes = pd.DataFrame(
     ]))
 
 #funções
-def partidas(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, clube = 0):
+def partidas_1(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, id_jogo = 0):
+    partidas = pd.merge(left=lista_jogos, right=lista_estadios, left_on='local', right_on='estadio', how='left')
+    partidas = partidas.drop(['completo', 'estadio', 'capacidade', 'cidade', 'estado', 'data_inauguracao', 'partida_inauguracao'], axis=1)
 
-    jogos = pd.merge(left = lista_jogos, right = lista_observacoes, left_on='id_jogo', right_on='id_jogo', how='left')
+    #parâmetros
+    partidas = partidas[partidas['competicao'] == competicao] if competicao != 0 else partidas
+    partidas = partidas[partidas['ano'] == ano] if ano != 0 else partidas    
+    partidas = partidas[partidas['grupo'] == grupo] if grupo != 0 else partidas
+    partidas = partidas[partidas['fase'] == fase] if fase != 0 else partidas
+    partidas = partidas[partidas['id'].str.contains(id_jogo)] if id_jogo != 0 else partidas
+    partidas = partidas[partidas['rodada'] == rodada] if rodada != 0 else partidas    
 
-    jogos = pd.DataFrame({
-        'ID': jogos['id_jogo'],
-        'Competição': jogos['competicao'],
-        'Ano': jogos['ano'],
-        'Data': jogos['data'],
-        'Horário': jogos['horario'],
-        'Grupo': jogos['grupo'],
-        'Fase': jogos['fase'],
-        'Rodada': jogos['rodada'],
-        'Mandante': jogos['mandante'],
-        'Placar': jogos['gol_m'].astype(str) + '-' + jogos['gol_v'].astype(str),
-        'Visitante': jogos['visitante'],
-        'Local': jogos['local'],
-        'Obs': jogos['obs']
-    })
+    partidas = pd.merge(left=partidas, right=lista_clubes, left_on='mandante', right_on='clube', how='left')
+    partidas = partidas.drop(['completo', 'clube', 'fundacao', 'cidade', 'estado'], axis=1)
 
-    jogos = jogos.where(pd.notnull(jogos), '')
+    partidas = pd.merge(left=partidas, right=lista_clubes, left_on='visitante', right_on='clube', how='left')
+    partidas = partidas.drop(['completo', 'clube', 'fundacao', 'cidade', 'estado'], axis=1)
 
-    #
-    jogos = jogos[jogos['Competição'] == competicao] if competicao != 0 else jogos
-    jogos = jogos[jogos['Ano'] == ano] if ano != 0 else jogos    
-    jogos = jogos[jogos['Grupo'] == grupo] if grupo != 0 else jogos
-    jogos = jogos[jogos['Fase'] == fase] if fase != 0 else jogos
-    jogos = jogos[jogos['ID'].str.contains(clube)] if clube != 0 else jogos
-    jogos = jogos[jogos['Rodada'] == rodada] if rodada != 0 else jogos
-    #jogos = jogos.sort_values(['Data'], ascending = [False]) if clube != 0 else jogos.sort_values(['Data'], ascending = [True])
+    partidas = partidas.rename(columns={"slug_clube_x": "slug_clube_m", "slug_clube_y": "slug_clube_v"})
 
-    return pd.merge(left=jogos, right=lista_estadios, left_on='Local', right_on='estadio', how='left').drop(['completo', 'estadio', 'capacidade', 'cidade', 'estado', 'data_inauguracao', 'partida_inauguracao'], axis=1)
+    partidas = partidas.where(pd.notnull(partidas), '')
+    
+    return partidas
+
+
+
+
+
+
 
 def classificacao(competicao = 0, ano = 0, grupo = 0, fase = 0, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = 0):
     clasf1 = pd.DataFrame({
         'id_jogo': lista_jogos['id_jogo'],
-        'Ano': lista_jogos['ano'],
-        'Competição': lista_jogos['competicao'],
-        'Grupo': lista_jogos['grupo'],
-        'Fase': lista_jogos['fase'],
-        'Estádio': lista_jogos['local'],
-        'Clube': lista_jogos['mandante'],
-        'Pts': 0,
-        'J': 1,
-        'V': 0,
-        'E': 0,
-        'D': 0,
-        'GP': lista_jogos['gol_m'],
-        'GC': lista_jogos['gol_v'],
-        'Saldo': lista_jogos['gol_m'] - lista_jogos['gol_v'],
+        'ano': lista_jogos['ano'],
+        'competicao': lista_jogos['competicao'],
+        'grupo': lista_jogos['grupo'],
+        'fase': lista_jogos['fase'],
+        'estadio': lista_jogos['local'],
+        'clube': lista_jogos['mandante'],
+        'pts': 0,
+        'j': 1,
+        'v': 0,
+        'e': 0,
+        'd': 0,
+        'gp': lista_jogos['gol_m'],
+        'gc': lista_jogos['gol_v'],
+        'saldo': lista_jogos['gol_m'] - lista_jogos['gol_v'],
     })
     clasf2 = pd.DataFrame({
         'id_jogo': lista_jogos['id_jogo'],
-        'Ano': lista_jogos['ano'],
-        'Competição': lista_jogos['competicao'],
-        'Grupo': lista_jogos['grupo'],
-        'Fase': lista_jogos['fase'],
-        'Estádio': lista_jogos['local'],
-        'Clube': lista_jogos['visitante'],
-        'Pts': 0,
-        'J': 1,
-        'V': 0,
-        'E': 0,
-        'D': 0,
-        'GP': lista_jogos['gol_v'],
-        'GC': lista_jogos['gol_m'],
-        'Saldo': lista_jogos['gol_v'] - lista_jogos['gol_m'],
+        'ano': lista_jogos['ano'],
+        'competicao': lista_jogos['competicao'],
+        'grupo': lista_jogos['grupo'],
+        'fase': lista_jogos['fase'],
+        'estadio': lista_jogos['local'],
+        'clube': lista_jogos['visitante'],
+        'pts': 0,
+        'j': 1,
+        'v': 0,
+        'e': 0,
+        'd': 0,
+        'gp': lista_jogos['gol_v'],
+        'gc': lista_jogos['gol_m'],
+        'saldo': lista_jogos['gol_v'] - lista_jogos['gol_m'],
     })   
 
     classificacao = pd.concat([clasf1, clasf2])
     
-    classificacao.loc[classificacao['GP'] > classificacao['GC'], 'V'] = 1
-    classificacao.loc[classificacao['GP'] == classificacao['GC'], 'E'] = 1
-    classificacao.loc[classificacao['GP'] < classificacao['GC'], 'D'] = 1
-    classificacao.loc[classificacao['GP'] > classificacao['GC'], 'Pts'] = vitoria
-    classificacao.loc[(classificacao['GP'] == classificacao['GC']) & (classificacao['GP'] + classificacao['GC'] == 0), 'Pts'] = empate_sem_gols
-    classificacao.loc[(classificacao['GP'] == classificacao['GC']) & (classificacao['GP'] + classificacao['GC'] > 0), 'Pts'] = empate_com_gols
-    classificacao.loc[classificacao['GP'] < classificacao['GC'], 'Pts'] = 0
+    classificacao.loc[classificacao['gp'] > classificacao['gc'], 'v'] = 1
+    classificacao.loc[classificacao['gp'] == classificacao['gc'], 'e'] = 1
+    classificacao.loc[classificacao['gp'] < classificacao['gc'], 'd'] = 1
+    classificacao.loc[classificacao['gp'] > classificacao['gc'], 'pts'] = vitoria
+    classificacao.loc[(classificacao['gp'] == classificacao['gc']) & (classificacao['gp'] + classificacao['gc'] == 0), 'pts'] = empate_sem_gols
+    classificacao.loc[(classificacao['gp'] == classificacao['gc']) & (classificacao['gp'] + classificacao['gc'] > 0), 'pts'] = empate_com_gols
+    classificacao.loc[classificacao['gp'] < classificacao['gc'], 'pts'] = 0
 
     #
-    classificacao = classificacao[classificacao['Competição'] == competicao] if competicao != 0 else classificacao
-    classificacao = classificacao[classificacao['Ano'] == ano] if ano != 0 else classificacao
-    classificacao = classificacao[classificacao['Grupo'] == grupo] if grupo != 0 else classificacao
-    classificacao = classificacao[classificacao['Fase'] == fase] if fase != 0 else classificacao
-    classificacao = classificacao[classificacao['Clube'].str.contains(clube)] if clube != 0 else classificacao
-    classificacao = classificacao.sort_values(['Pts', 'Saldo'], ascending = [False, False])
-    classificacao = classificacao.groupby(['Clube']).sum().reset_index().sort_values(['Pts', 'V', 'Saldo', 'GP'], ascending = [False, False, False, False]).drop(columns=['Ano']).reset_index().drop('index', axis=1)
-    classificacao.insert(0, 'Pos', classificacao.index + 1)
-    return pd.merge(left=classificacao, right=lista_clubes, left_on='Clube', right_on='clube', how='left').drop(['completo', 'clube', 'fundacao', 'cidade', 'estado'], axis=1)
+    classificacao = classificacao[classificacao['competicao'] == competicao] if competicao != 0 else classificacao
+    classificacao = classificacao[classificacao['ano'] == ano] if ano != 0 else classificacao
+    classificacao = classificacao[classificacao['grupo'] == grupo] if grupo != 0 else classificacao
+    classificacao = classificacao[classificacao['fase'] == fase] if fase != 0 else classificacao
+    classificacao = classificacao[classificacao['clube'].str.contains(clube)] if clube != 0 else classificacao
+    classificacao = classificacao.sort_values(['pts', 'saldo'], ascending = [False, False])
+    classificacao = classificacao.groupby(['clube']).sum().reset_index().sort_values(['pts', 'v', 'saldo', 'gp'], ascending = [False, False, False, False]).drop(columns=['ano']).reset_index().drop('index', axis=1)
+    classificacao.insert(0, 'pos', classificacao.index + 1)
+    return pd.merge(left=classificacao, right=lista_clubes, left_on='clube', right_on='clube', how='left').drop(['completo', 'fundacao', 'cidade', 'estado'], axis=1)
 
 def participacoes(ano, competicao):
     lista_mundanca_clube = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Mudanças')
@@ -131,7 +128,7 @@ def participacoes(ano, competicao):
         'Clube': participacoes['clube_x'],
         'Completo': participacoes['completo'],
         'Participações': participacoes['participações'],
-        'Slug': participacoes['slug'],
+        'Slug': participacoes['slug_clube'],
         'Obs': participacoes['obs']
     })
     return participacoes
@@ -143,7 +140,7 @@ def campeao(ano, competicao):
     lista_campeoes2['titulos'] = 1 
     lista_campeoes2 = lista_campeoes2.groupby(['clube']).sum().reset_index().drop(columns=['ano'])
     clube_campeao = pd.merge(left=clube_campeao, right=lista_campeoes2, left_on='clube', right_on='clube')[['clube', 'titulos']]
-    return pd.merge(left=clube_campeao, right=lista_clubes, left_on='clube', right_on='clube')[['clube', 'completo', 'titulos', 'slug']]
+    return pd.merge(left=clube_campeao, right=lista_clubes, left_on='clube', right_on='clube')[['clube', 'completo', 'titulos', 'slug_clube']]
 
 def artilharia(competicao = 0, ano = 0):
     artilharia = pd.merge(left = lista_artilharia, right = lista_jogos, left_on='id_jogo', right_on='id_jogo')
@@ -165,16 +162,16 @@ def dados(competicao, ano):
 
     dados = {
         'Participantes': len(participacoes(ano, competicao)),
-        'Nº de partidas': classificacao('Copa do Nordeste', ano).sum()['J'],
-        'Total de gols': classificacao('Copa do Nordeste', ano).sum()['GP'],
-        'Média de gols': "{:.2f}".format(classificacao('Copa do Nordeste', ano).sum()['GP'] / classificacao('Copa do Nordeste', ano).sum()['J']),
+        'Nº de partidas': classificacao('Copa do Nordeste', ano).sum()['j'],
+        'Total de gols': classificacao('Copa do Nordeste', ano).sum()['gp'],
+        'Média de gols': "{:.2f}".format(classificacao('Copa do Nordeste', ano).sum()['gp'] / classificacao('Copa do Nordeste', ano).sum()['j']),
         'Período': [inicio, final]
         }
     return dados
 
-def clube_info(clube_completo):
-    clube = lista_clubes[lista_clubes['slug'] == clube_completo]
-    return clube
+def clube_info(clube):
+    clube2 = lista_clubes[lista_clubes['slug_clube'] == clube]
+    return clube2
 
 def partida_dados(id):
     partida = lista_jogos[lista_jogos['id_jogo'] == id]
@@ -184,79 +181,79 @@ def mata_mata(competicao = 0, ano = 0, grupo = 0, fase = 0, clube = 0):
     jogos = pd.merge(left = lista_jogos, right = lista_observacoes, left_on='id_jogo', right_on='id_jogo', how='left')
 
     jogos = pd.DataFrame({
-        'ID': jogos['id_jogo'],
-        'Competição': jogos['competicao'],
-        'Ano': jogos['ano'],
-        'Data': jogos['data'],
-        'Horário': jogos['horario'],
-        'Grupo': jogos['grupo'],
-        'Fase': jogos['fase'],
-        'Rodada': jogos['rodada'],
-        'Mandante': jogos['mandante'],
-        'Placar': jogos['gol_m'].astype(str) + '-' + jogos['gol_v'].astype(str),
-        'Visitante': jogos['visitante'],
-        'Local': jogos['local'],
-        'Obs': jogos['obs'],
-        'Confronto1': jogos['confronto1'],
-        'Confronto2': jogos['confronto2'],
-        'Gol_M': jogos['gol_m'],
-        'Gol_V': jogos['gol_v'],
+        'id': jogos['id_jogo'],
+        'competição': jogos['competicao'],
+        'ano': jogos['ano'],
+        'data': jogos['data'],
+        'horário': jogos['horario'],
+        'grupo': jogos['grupo'],
+        'fase': jogos['fase'],
+        'rodada': jogos['rodada'],
+        'mandante': jogos['mandante'],
+        'placar': jogos['gol_m'].astype(str) + '-' + jogos['gol_v'].astype(str),
+        'visitante': jogos['visitante'],
+        'local': jogos['local'],
+        'obs': jogos['obs'],
+        'confronto1': jogos['confronto1'],
+        'confronto2': jogos['confronto2'],
+        'gol_m': jogos['gol_m'],
+        'gol_v': jogos['gol_v'],
     })
 
     jogos = jogos.where(pd.notnull(jogos), '')
 
-    jogos = pd.merge(left=jogos, right=lista_estadios, left_on='Local', right_on='estadio', how='left').drop(['completo', 'estadio', 'capacidade', 'cidade', 'estado', 'data_inauguracao', 'partida_inauguracao'], axis=1)
+    jogos = pd.merge(left=jogos, right=lista_estadios, left_on='local', right_on='estadio', how='left').drop(['completo', 'estadio', 'capacidade', 'cidade', 'estado', 'data_inauguracao', 'partida_inauguracao'], axis=1)
 
     #
-    jogos = jogos[jogos['Competição'] == competicao] if competicao != 0 else jogos
-    jogos = jogos[jogos['Ano'] == ano] if ano != 0 else jogos    
-    jogos = jogos[jogos['Grupo'] == grupo] if grupo != 0 else jogos
-    jogos = jogos[jogos['Fase'] == fase] if fase != 0 else jogos
-    jogos = jogos[jogos['ID'].str.contains(clube)] if clube != 0 else jogos
-    jogos = jogos.sort_values(['Data'], ascending = [False]) if clube != 0 else jogos.sort_values(['Data'], ascending = [True])
+    jogos = jogos[jogos['competição'] == competicao] if competicao != 0 else jogos
+    jogos = jogos[jogos['ano'] == ano] if ano != 0 else jogos    
+    jogos = jogos[jogos['grupo'] == grupo] if grupo != 0 else jogos
+    jogos = jogos[jogos['fase'] == fase] if fase != 0 else jogos
+    jogos = jogos[jogos['id'].str.contains(clube)] if clube != 0 else jogos
+    jogos = jogos.sort_values(['data'], ascending = [False]) if clube != 0 else jogos.sort_values(['data'], ascending = [True])
 
-    mata_mata = pd.merge(left = jogos, right = jogos, left_on='Confronto1', right_on='Confronto2')
-    mata_mata = mata_mata[mata_mata['Rodada_x'] == 'Ida']
+    mata_mata = pd.merge(left = jogos, right = jogos, left_on='confronto1', right_on='confronto2')
+    mata_mata = mata_mata[mata_mata['rodada_x'] == 'Ida']
 
     mata_mata2 = pd.DataFrame({
-        'ID_Ida': mata_mata['ID_x'],
-        'Competição_Ida': mata_mata['Competição_x'],
-        'Ano_Ida': mata_mata['Ano_x'],
-        'Data_Ida': mata_mata['Data_x'],
-        'Horário_Ida': mata_mata['Horário_x'],
-        'Grupo_Ida': mata_mata['Grupo_x'],
-        'Fase_Ida': mata_mata['Fase_x'],
-        'Rodada_Ida': mata_mata['Rodada_x'],
-        'Mandante_Ida': mata_mata['Mandante_x'],
-        'Placar_Ida': mata_mata['Placar_x'],
-        'Visitante_Ida': mata_mata['Visitante_x'],
-        'Local_Ida': mata_mata['Local_x'],
-        'Slug_Local_Ida': mata_mata['slug_x'],
-        'Obs_Ida': mata_mata['Obs_x'],
-        'Confronto1_Ida': mata_mata['Confronto1_x'],
-        'Confronto2_Ida': mata_mata['Confronto2_x'],
-        'ID_Volta': mata_mata['ID_y'],
-        'Competição_Volta': mata_mata['Competição_y'],
-        'Ano_Volta': mata_mata['Ano_y'],
-        'Data_Volta': mata_mata['Data_y'],
-        'Horário_Volta': mata_mata['Horário_y'],
-        'Grupo_Volta': mata_mata['Grupo_y'],
-        'Fase_Volta': mata_mata['Fase_y'],
-        'Rodada_Volta': mata_mata['Rodada_y'],
-        'Mandante_Volta': mata_mata['Mandante_y'],
-        'Placar_Volta': mata_mata['Placar_y'],
-        'Visitante_Volta': mata_mata['Visitante_y'],
-        'Local_Volta': mata_mata['Local_y'],
-        'Slug_Local_Volta': mata_mata['slug_y'],
-        'Obs_Volta': mata_mata['Obs_y'],
-        'Confronto1_Volta': mata_mata['Confronto1_y'],
-        'Confronto2_Volta': mata_mata['Confronto2_y'],
-        'Gol_M_Ida': mata_mata['Gol_M_x'],
-        'Gol_M_Volta': mata_mata['Gol_M_y'],
-        'Gol_V_Ida': mata_mata['Gol_V_x'],
-        'Gol_V_Volta': mata_mata['Gol_V_y'],
-        'Gol_M_IDA': mata_mata['Gol_M_x'] + mata_mata['Gol_V_y'],
-        'Gol_V_IDA': mata_mata['Gol_V_x'] + mata_mata['Gol_M_y']
+        'id_ida': mata_mata['id_x'],
+        'competição_ida': mata_mata['competição_x'],
+        'ano_ida': mata_mata['ano_x'],
+        'data_ida': mata_mata['data_x'],
+        'horário_ida': mata_mata['horário_x'],
+        'grupo_ida': mata_mata['grupo_x'],
+        'fase_ida': mata_mata['fase_x'],
+        'rodada_ida': mata_mata['rodada_x'],
+        'mandante_ida': mata_mata['mandante_x'],
+        'placar_ida': mata_mata['placar_x'],
+        'visitante_ida': mata_mata['visitante_x'],
+        'local_ida': mata_mata['local_x'],
+        'slug_local_ida': mata_mata['slug_estadio_x'],
+        'obs_ida': mata_mata['obs_x'],
+        'confronto1_ida': mata_mata['confronto1_x'],
+        'confronto2_ida': mata_mata['confronto2_x'],
+        'id_volta': mata_mata['id_y'],
+        'competição_volta': mata_mata['competição_y'],
+        'ano_volta': mata_mata['ano_y'],
+        'data_volta': mata_mata['data_y'],
+        'horário_volta': mata_mata['horário_y'],
+        'grupo_volta': mata_mata['grupo_y'],
+        'fase_volta': mata_mata['fase_y'],
+        'rodada_volta': mata_mata['rodada_y'],
+        'mandante_volta': mata_mata['mandante_y'],
+        'placar_volta': mata_mata['placar_y'],
+        'visitante_volta': mata_mata['visitante_y'],
+        'local_volta': mata_mata['local_y'],
+        'slug_local_volta': mata_mata['slug_estadio_y'],
+        'obs_volta': mata_mata['obs_y'],
+        'confronto1_volta': mata_mata['confronto1_y'],
+        'confronto2_volta': mata_mata['confronto2_y'],
+        'gol_m_ida': mata_mata['gol_m_x'],
+        'gol_m_volta': mata_mata['gol_m_y'],
+        'gol_v_ida': mata_mata['gol_v_x'],
+        'gol_v_volta': mata_mata['gol_v_y'],
+        'gol_m_ida': mata_mata['gol_m_x'] + mata_mata['gol_v_y'],
+        'gol_v_ida': mata_mata['gol_v_x'] + mata_mata['gol_m_y']
     })
 
     return mata_mata2
@@ -266,20 +263,21 @@ def colocacao(competicao, ano, vitoria = 3, empate_sem_gols = 1, empate_com_gols
     lista_colocacoes2 = lista_colocacoes2[lista_colocacoes2['ano'] == ano]
 
     cla = classificacao(competicao, ano = ano, grupo = 0, fase = 0, vitoria = vitoria, empate_sem_gols = empate_sem_gols, empate_com_gols = empate_com_gols, clube = 0)
-    cla['Aproveitamento'] = round(cla['Pts'] / (cla['J']*3)*100, 2)
+    cla['aproveitamento'] = round(cla['pts'] / (cla['j']*3)*100, 2)
+    cla = cla.drop(['pos'], axis = 1)
+    pos = pd.merge(left = lista_colocacoes2, right = cla, left_on='clube', right_on = 'clube')
 
-    pos = pd.merge(left = lista_colocacoes2, right = cla, left_on='clube', right_on = 'Clube')
-    return pos.drop(['clube', 'Pos'], axis = 1)
+    return pos
 
 def grupos_cruzados(competicao, ano, fase, grupo):
     lista_gruposcruzados = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Grupos Cruzados')
-    grupos = pd.merge(left=lista_gruposcruzados, right=classificacao(competicao = 0, ano = ano, grupo = 0, fase = fase, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = 0), left_on='clube', right_on='Clube')
+    grupos = pd.merge(left=lista_gruposcruzados, right=classificacao(competicao = 0, ano = ano, grupo = 0, fase = fase, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = 0), left_on='clube', right_on='clube')
     grupos = grupos[grupos['competicao'] == competicao]
     grupos = grupos[grupos['ano'] == ano]
     grupos = grupos[grupos['grupo'] == grupo]
-    grupos = grupos.drop('Pos', axis=1)
-    grupos = grupos.rename(columns={'competicao': 'Competição', 'ano': 'Ano', 'grupo': 'Grupo', 'clube': 'Clube', 'pos': 'Pos'})
-    return grupos.sort_values('Pos')
+    grupos = grupos.drop('pos_y', axis=1)
+    grupos = grupos.rename(columns={'pos_x': 'pos'})
+    return grupos.sort_values('pos')
 
 def segundos_colocados(competicao, ano, fase):
     lista_sugundoscolocados = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Segundos Colocados')
@@ -290,11 +288,11 @@ def segundos_colocados(competicao, ano, fase):
     grupos = grupos[grupos['ano'] == ano]
     grupos = grupos[['mandante', 'grupo']].drop_duplicates(subset=['mandante'])
 
-    classf = classificacao(competicao = competicao, ano = ano, grupo = 0, fase = fase, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = 0)
-    segundos = pd.merge(left=lista_sugundoscolocados, right=classf, left_on='clube', right_on='Clube').drop(['Pos'], axis=1)    
-    segundos = pd.merge(left=segundos, right=grupos, left_on='Clube', right_on='mandante')
-    segundos = segundos.rename(columns={'pos': 'Pos', 'grupo': 'Grupo'})
-    segundos['Grupo'] = segundos['Grupo'].apply(lambda x: x.replace('Grupo ', ''))
+    classf = classificacao(competicao = competicao, ano = ano, grupo = 0, fase = fase, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = 0).drop(['pos'], axis=1) 
+    segundos = pd.merge(left=lista_sugundoscolocados, right=classf, left_on='clube', right_on='clube')
+    segundos = pd.merge(left=segundos, right=grupos, left_on='clube', right_on='mandante')
+    #segundos = segundos.rename(columns={'pos': 'Pos', 'grupo': 'Grupo'})
+    segundos['grupo'] = segundos['grupo'].apply(lambda x: x.replace('Grupo ', ''))
     return segundos
 
 def n_participacoes(competicao, clube):
@@ -388,81 +386,81 @@ def ne(edicao, sigla_competicao):
             empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
 
         # fase preliminar (pré)
-        pre1=partidas(competicao, ano, 0, 'Primeira fase (Pré)', 'Único').to_dict('records'),
+        pre1=partidas_1(competicao, ano, 0, 'Primeira fase (Pré)', 'Único').to_dict('records'),
         pre1_2=mata_mata(competicao, ano, fase='Primeira fase (Pré)').to_dict('records'),
-        pre2=partidas(competicao, ano, 0, 'Segunda fase (Pré)', 'Único').to_dict('records'),
+        pre2=partidas_1(competicao, ano, 0, 'Segunda fase (Pré)', 'Único').to_dict('records'),
         pre2_2=mata_mata(competicao, ano, fase='Segunda fase (Pré)').to_dict('records'),
-        pre3=partidas(competicao, ano, 0, 'Terceira fase (Pré)', 'Único').to_dict('records'),
+        pre3=partidas_1(competicao, ano, 0, 'Terceira fase (Pré)', 'Único').to_dict('records'),
         pre3_2=mata_mata(competicao, ano, fase='Terceira fase (Pré)').to_dict('records'),
 
         # fase preliminar
-        fase_preliminar_jogos = partidas(competicao, ano, 'Único', 'Fase preliminar').to_dict('records'),
+        fase_preliminar_jogos = partidas_1(competicao, ano, 'Único', 'Fase preliminar').to_dict('records'),
         fase_preliminar_jogos2 = mata_mata(competicao, ano, fase='Fase preliminar (Pré)').to_dict('records'),
 
         # primeira fase
-        primeira_fase_jogos = partidas(competicao, ano, 'Único', 'Primeira fase').to_dict('records'),
+        primeira_fase_jogos = partidas_1(competicao, ano, 'Único', 'Primeira fase').to_dict('records'),
         primeira_fase_classificacao = classificacao(
             competicao, ano, 'Único', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
 
-        grupo_a_jogos = partidas(competicao, ano, 'Grupo A', 'Primeira fase').to_dict('records'),
+        grupo_a_jogos = partidas_1(competicao, ano, 'Grupo A', 'Primeira fase').to_dict('records'),
         grupo_a_classificacao = classificacao(
             competicao, ano, 'Grupo A', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
 
-        grupo_b_jogos = partidas(competicao, ano, 'Grupo B', 'Primeira fase').to_dict('records'),
+        grupo_b_jogos = partidas_1(competicao, ano, 'Grupo B', 'Primeira fase').to_dict('records'),
         grupo_b_classificacao = classificacao(
             competicao, ano, 'Grupo B', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),   
         
-        grupo_c_jogos = partidas(competicao, ano, 'Grupo C', 'Primeira fase').to_dict('records'),
+        grupo_c_jogos = partidas_1(competicao, ano, 'Grupo C', 'Primeira fase').to_dict('records'),
         grupo_c_classificacao = classificacao(
             competicao, ano, 'Grupo C', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
 
-        grupo_d_jogos = partidas(competicao, ano, 'Grupo D', 'Primeira fase').to_dict('records'),
+        grupo_d_jogos = partidas_1(competicao, ano, 'Grupo D', 'Primeira fase').to_dict('records'),
         grupo_d_classificacao = classificacao(
             competicao, ano, 'Grupo D', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
 
-        grupo_e_jogos = partidas(competicao, ano, 'Grupo E', 'Primeira fase').to_dict('records'),
+        grupo_e_jogos = partidas_1(competicao, ano, 'Grupo E', 'Primeira fase').to_dict('records'),
         grupo_e_classificacao = classificacao(
             competicao, ano, 'Grupo E', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
 
-        grupo_f_jogos = partidas(competicao, ano, 'Grupo F', 'Primeira fase').to_dict('records'),
+        grupo_f_jogos = partidas_1(competicao, ano, 'Grupo F', 'Primeira fase').to_dict('records'),
         grupo_f_classificacao = classificacao(
             competicao, ano, 'Grupo F', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
 
-        grupos_cruzados_jogos = partidas(competicao, ano, 0, 'Primeira fase').to_dict('records'),
+        grupos_cruzados_jogos = partidas_1(competicao, ano, 0, 'Primeira fase').to_dict('records'),
         grupo_a_cruzado_classificacao = grupos_cruzados(competicao, ano, fase = 'Primeira fase', grupo = 'A').to_dict('records'),
         grupo_b_cruzado_classificacao = grupos_cruzados(competicao, ano, fase = 'Primeira fase', grupo = 'B').to_dict('records'),
 
         segundoscolocados = segundos_colocados(competicao, ano, 'Primeira fase').to_dict('records'),
 
         # segunda fase / mata-matas
-        grupo_e2_jogos = partidas(competicao, ano, 'Grupo E', 'Segunda fase').to_dict('records'),
+        grupo_e2_jogos = partidas_1(competicao, ano, 'Grupo E', 'Segunda fase').to_dict('records'),
         grupo_e2_classificacao = classificacao(
             competicao, ano, 'Grupo E', 'Segunda fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
         
-        grupo_f2_jogos = partidas(competicao, ano, 'Grupo F', 'Segunda fase').to_dict('records'),
+        grupo_f2_jogos = partidas_1(competicao, ano, 'Grupo F', 'Segunda fase').to_dict('records'),
         grupo_f2_classificacao = classificacao(
             competicao, ano, 'Grupo F', 'Segunda fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
 
-        of=partidas(competicao, ano, 0, 'Oitavas de final', 'Único').to_dict('records'),
+        of=partidas_1(competicao, ano, 0, 'Oitavas de final', 'Único').to_dict('records'),
         of2=mata_mata(competicao, ano, fase='Oitavas de final').to_dict('records'),
 
-        qf=partidas(competicao, ano, 0, 'Quartas de final', 'Único').to_dict('records'),
+        qf=partidas_1(competicao, ano, 0, 'Quartas de final', 'Único').to_dict('records'),
         qf2=mata_mata(competicao, ano, fase='Quartas de final').to_dict('records'),
 
-        sf=partidas(competicao, ano, 0, 'Semifinal', 'Único').to_dict('records'),
+        sf=partidas_1(competicao, ano, 0, 'Semifinal', 'Único').to_dict('records'),
         sf2=mata_mata(competicao, ano, fase='Semifinal').to_dict('records'),
 
-        final=partidas(competicao, ano, 0, 'Final', 'Único').to_dict('records'),
+        final=partidas_1(competicao, ano, 0, 'Final', 'Único').to_dict('records'),
         final2=mata_mata(competicao, ano, fase='Final').to_dict('records')
     )
 
 ## clubes
 @app.route('/clubes/<clube>')
 def clubes(clube):
-    slug = clube_info(clube)['slug'].iloc[0]
+    slug = clube_info(clube)['slug_clube'].iloc[0]
     nome_completo = clube_info(clube)['completo'].iloc[0]
     nome_curto = clube_info(clube)['clube'].iloc[0]
-    escudo = clube_info(clube)['slug'].iloc[0]
+    escudo = clube_info(clube)['slug_clube'].iloc[0]
     fundacao = clube_info(clube)['fundacao'].iloc[0]
     cidade = clube_info(clube)['cidade'].iloc[0]
     estado = clube_info(clube)['estado'].iloc[0]
@@ -485,14 +483,14 @@ def clubes(clube):
 ## estádio
 @app.route('/estadios/<estadio>')
 def estadios(estadio):
-    slug = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['slug']
-    completo = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['completo']
-    capacidade = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['capacidade']
-    cidade = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['cidade']
-    estado = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['estado']
+    slug = lista_estadios[lista_estadios['slug_estadio'] == estadio].to_dict('records')[0]['slug_estadio']
+    completo = lista_estadios[lista_estadios['slug_estadio'] == estadio].to_dict('records')[0]['completo']
+    capacidade = lista_estadios[lista_estadios['slug_estadio'] == estadio].to_dict('records')[0]['capacidade']
+    cidade = lista_estadios[lista_estadios['slug_estadio'] == estadio].to_dict('records')[0]['cidade']
+    estado = lista_estadios[lista_estadios['slug_estadio'] == estadio].to_dict('records')[0]['estado']
 
-    jogo_inauguracao = lista_estadios[lista_estadios['slug'] == estadio].to_dict('records')[0]['partida_inauguracao']
-    jogo_inauguracao2 = partidas(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, clube = 0)
+    jogo_inauguracao = lista_estadios[lista_estadios['slug_estadio'] == estadio].to_dict('records')[0]['partida_inauguracao']
+    jogo_inauguracao2 = partidas_1(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, id_jogo = 0)
 
     return render_template('/estadios.html',
         title = completo,
@@ -501,7 +499,7 @@ def estadios(estadio):
         capacidade = int(capacidade),
         cidade = cidade,
         estado = estado,
-        jogo_inauguracao = jogo_inauguracao2[jogo_inauguracao2['ID'] == jogo_inauguracao].to_dict('records'),
+        jogo_inauguracao = jogo_inauguracao2[jogo_inauguracao2['id_jogo'] == jogo_inauguracao].to_dict('records'),
     )
 
 if __name__ == '__main__':

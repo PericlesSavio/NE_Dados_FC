@@ -1,8 +1,8 @@
 <tr>        
-    <td>{{ row.Data_Ida }}<br><br>Rodada {{ row.Rodada_Ida }}</td>
-    <td>{{ row.Mandante_Ida }} {{ row.Placar_Ida }} {{ row.Visitante_Ida }}<br><i>{{ row.Obs_Ida }}</i><br>{{ row.Local_Ida }}</td>
+    <td>{{ row.data_ida }}<br><br>rodada {{ row.rodada_ida }}</td>
+    <td>{{ row.mandante_ida }} {{ row.placar_ida }} {{ row.visitante_ida }}<br><i>{{ row.obs_ida }}</i><br><a href="{{url_for('estadios', estadio=row.slug_local_ida )}}">{{ row.local_ida }}</a></td>
 </tr>
 <tr>        
-    <td>{{ row.Data_Volta }}<br><br>Rodada {{ row.Rodada_Volta }}</td>
-    <td>{{ row.Mandante_Volta }} {{ row.Placar_Volta }} {{ row.Visitante_Volta }}<br><i>{{ row.Obs_Volta }}</i><br>{{ row.Local_Volta }}</td>
+    <td>{{ row.data_volta }}<br><br>rodada {{ row.rodada_volta }}</td>
+    <td>{{ row.mandante_volta }} {{ row.placar_volta }} {{ row.visitante_volta }}<br><i>{{ row.obs_volta }}</i><br><a href="{{url_for('estadios', estadio=row.slug_local_volta )}}">{{ row.local_volta }}</a></td>
 </tr>

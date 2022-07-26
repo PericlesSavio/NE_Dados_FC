@@ -168,9 +168,9 @@
         
         {% for row in lista_clubes %}
             <div style="width:150px">
-                <a href="/clubes/{{ row.slug }}">
+                <a href="/clubes/{{ row.slug_clube }}">
                     <div>
-                        <img src="/static/escudos/{{ row.slug }}.png" style="height:100px">
+                        <img src="/static/escudos/{{ row.slug_clube }}.png" style="height:100px">
                         <br>
                         {{ row.clube }}
                     </div>
