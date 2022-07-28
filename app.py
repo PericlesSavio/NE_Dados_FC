@@ -1,15 +1,13 @@
 from flask import Flask, render_template
 import pandas as pd
-from sqlalchemy import null
 
 #dados
 lista_jogos = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Jogos')
 lista_jogos['data'] = pd.to_datetime(lista_jogos['data']).dt.date
 lista_clubes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Clubes')
 lista_campeoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Campeões')
-#lista_artilharia = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Artilharia')
+lista_artilharia = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Artilharia')
 lista_jogadores = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Jogadores')
-lista_gols = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Artilharia')
 lista_estadios = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Estádios')
 lista_observacoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Observações')
 lista_colocacoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Posições')
@@ -30,7 +28,7 @@ def partidas_1(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, id_jogo
     partidas = partidas[partidas['ano'] == ano] if ano != 0 else partidas    
     partidas = partidas[partidas['grupo'] == grupo] if grupo != 0 else partidas
     partidas = partidas[partidas['fase'] == fase] if fase != 0 else partidas
-    partidas = partidas[partidas['id_jogo'].str.contains(id_jogo)] if id_jogo != 0 else partidas
+    partidas = partidas[partidas['id'].str.contains(id_jogo)] if id_jogo != 0 else partidas
     partidas = partidas[partidas['rodada'] == rodada] if rodada != 0 else partidas    
 
     partidas = pd.merge(left=partidas, right=lista_clubes, left_on='mandante', right_on='clube', how='left')
@@ -312,33 +310,6 @@ def n_titulos_edicoes(competicao, clube):
     n__titulos = n__titulos[n__titulos['clube'] == clube]
     return n__titulos
 
-def gols_partida(id_jogo):
-    gols = lista_gols[lista_gols['id_jogo'] == id_jogo]
-    gols = pd.merge(left=gols, right=lista_jogadores, left_on='jogador', right_on='jogador', how='left')
-    gols = pd.merge(left=gols, right=lista_jogos, left_on='id_jogo', right_on='id_jogo', how='left')
-    gols = gols[['id_jogo', 'jogador', 'clube', 'tempo', 'min', 'tipo', 'alcunha', 'slug_jogador', 'mandante', 'visitante']]
-
-    gols.loc[(gols['clube'] == gols['mandante']) & (gols['tipo'] == 'Gol'), 'jogador_m'] = gols['alcunha']
-    gols.loc[(gols['clube'] == gols['visitante']) & (gols['tipo'] == 'Gol'), 'jogador_v'] = gols['alcunha']
-
-    gols.loc[(gols['clube'] == gols['mandante']) & (gols['tipo'] == 'Contra'), 'jogador_v'] = gols['alcunha']
-    gols.loc[(gols['clube'] == gols['visitante']) & (gols['tipo'] == 'Contra'), 'jogador_m'] = gols['alcunha']
-
-    #gols.loc[(gols['clube'] == gols['mandante']) & (gols['tipo'] == 'Gol'), 'gol_tipo_m'] = 'Gol'
-    #gols.loc[(gols['clube'] == gols['visitante']) & (gols['tipo'] == 'Gol'), 'gol_tipo_v'] = 'Gol'
-
-    try:
-        gols.loc[(gols['clube'] == gols['mandante']) & (gols['tipo'] == 'Contra'), 'gol_tipo_v'] = 'Contra'
-    except:
-        pass
-    
-    try:
-        gols.loc[(gols['clube'] == gols['visitante']) & (gols['tipo'] == 'Contra'), 'gol_tipo_m'] = 'Contra'
-    except:
-        pass 
-
-    return gols.where(pd.notnull(gols), '')
-
 
 
 
@@ -530,37 +501,6 @@ def estadios(estadio):
         estado = estado,
         jogo_inauguracao = jogo_inauguracao2[jogo_inauguracao2['id_jogo'] == jogo_inauguracao].to_dict('records'),
     )
-
-@app.route('/partidas/<partida>')
-def partidas(partida):
-    id_jogo = partida
-    partida_dados = partidas_1(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, id_jogo = id_jogo)
-
-    try:
-        return render_template('/partidas.html',
-            title = partida_dados.loc[0, 'mandante'] + ' ' + str(partida_dados.loc[0, 'gol_m']) + '-' + str(partida_dados.loc[0, 'gol_v']) + ' ' + partida_dados.loc[0, 'visitante'],
-            gols = gols_partida(id_jogo).to_dict('records'),
-            mandante = partida_dados.loc[0, 'mandante'],
-            visitante = partida_dados.loc[0, 'visitante'],
-            partida = partidas_1(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, id_jogo = id_jogo).to_dict('records'),
-        )
-    except:
-        return render_template('/404.html')
-
-@app.route('/jogador/<jogador>')
-def jogador(jogador):
-    id_jogo = jogador
-    partida_dados = partidas_1(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, id_jogo = id_jogo)
-
-
-    return render_template('/jogador.html',
-        title = partida_dados.loc[0, 'mandante'] + ' ' + str(partida_dados.loc[0, 'gol_m']) + '-' + str(partida_dados.loc[0, 'gol_v']) + ' ' + partida_dados.loc[0, 'visitante'],
-        gols = gols_partida(id_jogo).to_dict('records'),
-        mandante = partida_dados.loc[0, 'mandante'],
-        visitante = partida_dados.loc[0, 'visitante'],
-        partida = partidas_1(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, id_jogo = id_jogo).to_dict('records'),
-    )
-
 
 if __name__ == '__main__':
     app.run(debug=True) #debug=True, port=8080
