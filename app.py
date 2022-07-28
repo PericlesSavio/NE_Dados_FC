@@ -6,8 +6,9 @@ lista_jogos = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Jogos')
 lista_jogos['data'] = pd.to_datetime(lista_jogos['data']).dt.date
 lista_clubes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Clubes')
 lista_campeoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Campeões')
-lista_artilharia = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Artilharia')
+#lista_artilharia = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Artilharia')
 lista_jogadores = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Jogadores')
+lista_gols = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Artilharia')
 lista_estadios = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Estádios')
 lista_observacoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Observações')
 lista_colocacoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Posições')
@@ -310,36 +311,48 @@ def n_titulos_edicoes(competicao, clube):
     n__titulos = n__titulos[n__titulos['clube'] == clube]
     return n__titulos
 
+def gols_partida(id_jogo):
+    gols = lista_gols[lista_gols['id_jogo'] == id_jogo]
+    gols = pd.merge(left=gols, right=lista_jogadores, left_on='jogador', right_on='jogador', how='left')
+    gols = pd.merge(left=gols, right=lista_jogos, left_on='id_jogo', right_on='id_jogo', how='left')
+    gols = gols[['id_jogo', 'jogador', 'clube', 'tempo', 'min', 'tipo', 'alcunha', 'slug_jogador', 'mandante', 'visitante']]
 
+    gols.loc[(gols['clube'] == gols['mandante']) & (gols['tipo'] == 'Gol'), 'jogador_m'] = gols['alcunha']
+    gols.loc[(gols['clube'] == gols['visitante']) & (gols['tipo'] == 'Gol'), 'jogador_v'] = gols['alcunha']
+
+    gols.loc[(gols['clube'] == gols['mandante']) & (gols['tipo'] == 'Contra'), 'jogador_v'] = gols['alcunha']
+    gols.loc[(gols['clube'] == gols['visitante']) & (gols['tipo'] == 'Contra'), 'jogador_m'] = gols['alcunha']
+
+    #gols.loc[(gols['clube'] == gols['mandante']) & (gols['tipo'] == 'Gol'), 'gol_tipo_m'] = 'Gol'
+    #gols.loc[(gols['clube'] == gols['visitante']) & (gols['tipo'] == 'Gol'), 'gol_tipo_v'] = 'Gol'
+
+    try:
+        gols.loc[(gols['clube'] == gols['mandante']) & (gols['tipo'] == 'Contra'), 'gol_tipo_v'] = 'Contra'
+    except:
+        pass
+    
+    try:
+        gols.loc[(gols['clube'] == gols['visitante']) & (gols['tipo'] == 'Contra'), 'gol_tipo_m'] = 'Contra'
+    except:
+        pass 
+
+    return gols.where(pd.notnull(gols), '')
 
 
 #flask app
 app = Flask(__name__)
 
 ## competições (copa do nordeste)
-@app.route('/')
+
+@app.route('/teste')
 @app.route('/competicoes/')
 #@app.route('/competicoes/ne/')
 @app.route('/clubes/')
+@app.route('/')
 def index():  
     return render_template('home.html',
         title = 'NE Dados FC',
         lista_clubes = lista_clubes.to_dict('records'),
-    )
-
-@app.route('/competicoes/<sigla_competicao>')
-@app.route('/competicoes/<sigla_competicao>/')
-def comp(sigla_competicao):
-
-    # parâmetros
-    competicao = lista_competicoes[lista_competicoes['codigo'] == sigla_competicao]['competicao'][0]
-
-    return render_template('/comp.html',
-
-        title = competicao,
-
-        # dados
-        classificacao_geral = classificacao(competicao, ano = 0, grupo = 0, fase = 0, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = 0).to_dict('records'),
     )
 
 ## competições
@@ -359,100 +372,117 @@ def ne(edicao, sigla_competicao):
         pts_empate_com_gols = 1
         pts_vitoria = 3
     
+    competicao = lista_competicoes[lista_competicoes['codigo'] == sigla_competicao]['competicao'][0]    
+    try:
+        return render_template('/ne.html',
+
+            title = competicao,
+            edicao=ano,
+            url = sigla_competicao,
+
+            # dados
+            n_participantes = dados(competicao, ano)['Participantes'],
+            n_partidas = dados(competicao, ano)['Nº de partidas'],
+            total_jogos = dados(competicao, ano)['Total de gols'],
+            media_gols = dados(competicao, ano)['Média de gols'],
+            periodo = dados(competicao, ano)['Período'],
+            participantes=participacoes(ano, competicao).to_dict('records'),
+            regulamento = '',
+            campeao = campeao(ano, competicao).to_dict('records'),
+            titulos = campeao(ano, competicao)['titulos'].to_string().replace("0    ", ""),        
+            campanha = classificacao(
+                competicao = competicao, ano = ano, grupo = 0, fase = 0, vitoria = pts_vitoria, empate_sem_gols = pts_empate_sem_gols,
+                empate_com_gols = pts_empate_com_gols, clube = campeao(ano, competicao).iloc[0,0]).head(1).to_dict('records'),
+            classificacao_final = colocacao(competicao, ano, vitoria = pts_vitoria,
+                empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+
+            # fase preliminar (pré)
+            pre1=partidas_1(competicao, ano, 0, 'Primeira fase (Pré)', 'Único').to_dict('records'),
+            pre1_2=mata_mata(competicao, ano, fase='Primeira fase (Pré)').to_dict('records'),
+            pre2=partidas_1(competicao, ano, 0, 'Segunda fase (Pré)', 'Único').to_dict('records'),
+            pre2_2=mata_mata(competicao, ano, fase='Segunda fase (Pré)').to_dict('records'),
+            pre3=partidas_1(competicao, ano, 0, 'Terceira fase (Pré)', 'Único').to_dict('records'),
+            pre3_2=mata_mata(competicao, ano, fase='Terceira fase (Pré)').to_dict('records'),
+
+            # fase preliminar
+            fase_preliminar_jogos = partidas_1(competicao, ano, 'Único', 'Fase preliminar').to_dict('records'),
+            fase_preliminar_jogos2 = mata_mata(competicao, ano, fase='Fase preliminar (Pré)').to_dict('records'),
+
+            # primeira fase
+            primeira_fase_jogos = partidas_1(competicao, ano, 'Único', 'Primeira fase').to_dict('records'),
+            primeira_fase_classificacao = classificacao(
+                competicao, ano, 'Único', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+
+            grupo_a_jogos = partidas_1(competicao, ano, 'Grupo A', 'Primeira fase').to_dict('records'),
+            grupo_a_classificacao = classificacao(
+                competicao, ano, 'Grupo A', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+
+            grupo_b_jogos = partidas_1(competicao, ano, 'Grupo B', 'Primeira fase').to_dict('records'),
+            grupo_b_classificacao = classificacao(
+                competicao, ano, 'Grupo B', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),   
+            
+            grupo_c_jogos = partidas_1(competicao, ano, 'Grupo C', 'Primeira fase').to_dict('records'),
+            grupo_c_classificacao = classificacao(
+                competicao, ano, 'Grupo C', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+
+            grupo_d_jogos = partidas_1(competicao, ano, 'Grupo D', 'Primeira fase').to_dict('records'),
+            grupo_d_classificacao = classificacao(
+                competicao, ano, 'Grupo D', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+
+            grupo_e_jogos = partidas_1(competicao, ano, 'Grupo E', 'Primeira fase').to_dict('records'),
+            grupo_e_classificacao = classificacao(
+                competicao, ano, 'Grupo E', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+
+            grupo_f_jogos = partidas_1(competicao, ano, 'Grupo F', 'Primeira fase').to_dict('records'),
+            grupo_f_classificacao = classificacao(
+                competicao, ano, 'Grupo F', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+
+            grupos_cruzados_jogos = partidas_1(competicao, ano, 0, 'Primeira fase').to_dict('records'),
+            grupo_a_cruzado_classificacao = grupos_cruzados(competicao, ano, fase = 'Primeira fase', grupo = 'A').to_dict('records'),
+            grupo_b_cruzado_classificacao = grupos_cruzados(competicao, ano, fase = 'Primeira fase', grupo = 'B').to_dict('records'),
+
+            segundoscolocados = segundos_colocados(competicao, ano, 'Primeira fase').to_dict('records'),
+
+            # segunda fase / mata-matas
+            grupo_e2_jogos = partidas_1(competicao, ano, 'Grupo E', 'Segunda fase').to_dict('records'),
+            grupo_e2_classificacao = classificacao(
+                competicao, ano, 'Grupo E', 'Segunda fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+            
+            grupo_f2_jogos = partidas_1(competicao, ano, 'Grupo F', 'Segunda fase').to_dict('records'),
+            grupo_f2_classificacao = classificacao(
+                competicao, ano, 'Grupo F', 'Segunda fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+
+            of=partidas_1(competicao, ano, 0, 'Oitavas de final', 'Único').to_dict('records'),
+            of2=mata_mata(competicao, ano, fase='Oitavas de final').to_dict('records'),
+
+            qf=partidas_1(competicao, ano, 0, 'Quartas de final', 'Único').to_dict('records'),
+            qf2=mata_mata(competicao, ano, fase='Quartas de final').to_dict('records'),
+
+            sf=partidas_1(competicao, ano, 0, 'Semifinal', 'Único').to_dict('records'),
+            sf2=mata_mata(competicao, ano, fase='Semifinal').to_dict('records'),
+
+            final=partidas_1(competicao, ano, 0, 'Final', 'Único').to_dict('records'),
+            final2=mata_mata(competicao, ano, fase='Final').to_dict('records')
+        )
+    except:
+        return render_template('/404.html')
+
+
+@app.route('/competicoes/<sigla_competicao>')
+@app.route('/competicoes/<sigla_competicao>/')
+def comp(sigla_competicao):
+
+    # parâmetros
     competicao = lista_competicoes[lista_competicoes['codigo'] == sigla_competicao]['competicao'][0]
 
-    
-
-    return render_template('/ne.html',
+    return render_template('/comp.html',
 
         title = competicao,
-        edicao=ano,
-        url = sigla_competicao,
 
         # dados
-        n_participantes = dados(competicao, ano)['Participantes'],
-        n_partidas = dados(competicao, ano)['Nº de partidas'],
-        total_jogos = dados(competicao, ano)['Total de gols'],
-        media_gols = dados(competicao, ano)['Média de gols'],
-        periodo = dados(competicao, ano)['Período'],
-        participantes=participacoes(ano, competicao).to_dict('records'),
-        regulamento = '',
-        campeao = campeao(ano, competicao).to_dict('records'),
-        titulos = campeao(ano, competicao)['titulos'].to_string().replace("0    ", ""),        
-        campanha = classificacao(
-            competicao = competicao, ano = ano, grupo = 0, fase = 0, vitoria = pts_vitoria, empate_sem_gols = pts_empate_sem_gols,
-            empate_com_gols = pts_empate_com_gols, clube = campeao(ano, competicao).iloc[0,0]).head(1).to_dict('records'),
-        classificacao_final = colocacao(competicao, ano, vitoria = pts_vitoria,
-            empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
-
-        # fase preliminar (pré)
-        pre1=partidas_1(competicao, ano, 0, 'Primeira fase (Pré)', 'Único').to_dict('records'),
-        pre1_2=mata_mata(competicao, ano, fase='Primeira fase (Pré)').to_dict('records'),
-        pre2=partidas_1(competicao, ano, 0, 'Segunda fase (Pré)', 'Único').to_dict('records'),
-        pre2_2=mata_mata(competicao, ano, fase='Segunda fase (Pré)').to_dict('records'),
-        pre3=partidas_1(competicao, ano, 0, 'Terceira fase (Pré)', 'Único').to_dict('records'),
-        pre3_2=mata_mata(competicao, ano, fase='Terceira fase (Pré)').to_dict('records'),
-
-        # fase preliminar
-        fase_preliminar_jogos = partidas_1(competicao, ano, 'Único', 'Fase preliminar').to_dict('records'),
-        fase_preliminar_jogos2 = mata_mata(competicao, ano, fase='Fase preliminar (Pré)').to_dict('records'),
-
-        # primeira fase
-        primeira_fase_jogos = partidas_1(competicao, ano, 'Único', 'Primeira fase').to_dict('records'),
-        primeira_fase_classificacao = classificacao(
-            competicao, ano, 'Único', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
-
-        grupo_a_jogos = partidas_1(competicao, ano, 'Grupo A', 'Primeira fase').to_dict('records'),
-        grupo_a_classificacao = classificacao(
-            competicao, ano, 'Grupo A', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
-
-        grupo_b_jogos = partidas_1(competicao, ano, 'Grupo B', 'Primeira fase').to_dict('records'),
-        grupo_b_classificacao = classificacao(
-            competicao, ano, 'Grupo B', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),   
-        
-        grupo_c_jogos = partidas_1(competicao, ano, 'Grupo C', 'Primeira fase').to_dict('records'),
-        grupo_c_classificacao = classificacao(
-            competicao, ano, 'Grupo C', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
-
-        grupo_d_jogos = partidas_1(competicao, ano, 'Grupo D', 'Primeira fase').to_dict('records'),
-        grupo_d_classificacao = classificacao(
-            competicao, ano, 'Grupo D', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
-
-        grupo_e_jogos = partidas_1(competicao, ano, 'Grupo E', 'Primeira fase').to_dict('records'),
-        grupo_e_classificacao = classificacao(
-            competicao, ano, 'Grupo E', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
-
-        grupo_f_jogos = partidas_1(competicao, ano, 'Grupo F', 'Primeira fase').to_dict('records'),
-        grupo_f_classificacao = classificacao(
-            competicao, ano, 'Grupo F', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
-
-        grupos_cruzados_jogos = partidas_1(competicao, ano, 0, 'Primeira fase').to_dict('records'),
-        grupo_a_cruzado_classificacao = grupos_cruzados(competicao, ano, fase = 'Primeira fase', grupo = 'A').to_dict('records'),
-        grupo_b_cruzado_classificacao = grupos_cruzados(competicao, ano, fase = 'Primeira fase', grupo = 'B').to_dict('records'),
-
-        segundoscolocados = segundos_colocados(competicao, ano, 'Primeira fase').to_dict('records'),
-
-        # segunda fase / mata-matas
-        grupo_e2_jogos = partidas_1(competicao, ano, 'Grupo E', 'Segunda fase').to_dict('records'),
-        grupo_e2_classificacao = classificacao(
-            competicao, ano, 'Grupo E', 'Segunda fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
-        
-        grupo_f2_jogos = partidas_1(competicao, ano, 'Grupo F', 'Segunda fase').to_dict('records'),
-        grupo_f2_classificacao = classificacao(
-            competicao, ano, 'Grupo F', 'Segunda fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
-
-        of=partidas_1(competicao, ano, 0, 'Oitavas de final', 'Único').to_dict('records'),
-        of2=mata_mata(competicao, ano, fase='Oitavas de final').to_dict('records'),
-
-        qf=partidas_1(competicao, ano, 0, 'Quartas de final', 'Único').to_dict('records'),
-        qf2=mata_mata(competicao, ano, fase='Quartas de final').to_dict('records'),
-
-        sf=partidas_1(competicao, ano, 0, 'Semifinal', 'Único').to_dict('records'),
-        sf2=mata_mata(competicao, ano, fase='Semifinal').to_dict('records'),
-
-        final=partidas_1(competicao, ano, 0, 'Final', 'Único').to_dict('records'),
-        final2=mata_mata(competicao, ano, fase='Final').to_dict('records')
+        classificacao_geral = classificacao(competicao, ano = 0, grupo = 0, fase = 0, vitoria = 3, empate_sem_gols = 1, empate_com_gols = 1, clube = 0).to_dict('records'),
     )
+
 
 ## clubes
 @app.route('/clubes/<clube>')
@@ -501,6 +531,20 @@ def estadios(estadio):
         estado = estado,
         jogo_inauguracao = jogo_inauguracao2[jogo_inauguracao2['id_jogo'] == jogo_inauguracao].to_dict('records'),
     )
+
+app.route('/partidas/<partida>')
+def partidas(partida):
+    id_jogo = partida
+    partida_dados = partidas_1(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, id_jogo = id_jogo)
+
+    return render_template('/partidas.html',
+        title = partida_dados.loc[0, 'mandante'] + ' ' + str(partida_dados.loc[0, 'gol_m']) + '-' + str(partida_dados.loc[0, 'gol_v']) + ' ' + partida_dados.loc[0, 'visitante'],
+        gols = gols_partida(id_jogo).to_dict('records'),
+        mandante = partida_dados.loc[0, 'mandante'],
+        visitante = partida_dados.loc[0, 'visitante'],
+        partida = partidas_1(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, id_jogo = id_jogo).to_dict('records'),
+    )
+
 
 if __name__ == '__main__':
     app.run(debug=True) #debug=True, port=8080
