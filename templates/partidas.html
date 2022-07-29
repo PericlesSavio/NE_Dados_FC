@@ -15,16 +15,23 @@
     <div class="box">
 
       {% if gols|length %}
-        <h2>Dados partida</h2>
         <table class="pc">
           <tr>
-            <th class="w-6rem">{{ mandante }}</th>
-            <th class="w-6rem"></th>
-            <th class="w-6rem">{{ visitante }}</th>
+            <th class="w-6rem vertical-bottom">
+              <img src="../../static/escudos/{{ slug_mandante }}.png" style="width: 100px;">
+              <br>
+              <a href="{{url_for('clubes', clube=slug_mandante )}}">{{ mandante }}</a>
+            </th>
+            <th class="w-6rem vertical-middle placar">{{ gol_m }}-{{ gol_v }}</th>
+            <th class="w-6rem vertical-bottom">
+              <img src="../../static/escudos/{{ slug_visitante }}.png" style="width: 100px;">
+              <br>
+              <a href="{{url_for('clubes', clube=slug_visitante )}}">{{ visitante }}</a>
+            </th>
           </tr>
           {% for row in gols %}
           <tr>     
-            <td><a href="{{url_for('estadios', estadio=row.slug_jogador )}}">{{ row.jogador_m }}</a> <i>{{ row.gol_tipo_m }}</i></td>
+            <td><a href="{{url_for('jogador', jogador=row.slug_jogador )}}">{{ row.jogador_m }}</a> <i>{{ row.gol_tipo_m }}</i></td>
             <td>{{ row.min }} ({{ row.tempo }})</td>
             <td>{{ row.jogador_v }} <i>{{ row.gol_tipo_v }}</i></td>
           </tr>
@@ -39,17 +46,8 @@
       {% else %}
       {% endif %}
 
-
-
-
-
-
-
-
-
-
     </div>
 
-    {% include 'include/footer.html' %}
+    {% include 'partials/footer.html' %}
   </body>
 </html>

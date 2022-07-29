@@ -95,6 +95,30 @@ section:nth-child(1) {
   margin-bottom: 2rem;
 }
 
+.vertical-middle {
+  vertical-align: middle;
+}
+
+.vertical-bottom {
+  vertical-align: bottom;
+}
+
+.placar {
+  font-size: 4rem;
+}
+
+.vh100 {
+  height: 100vh;
+}
+
+.erro404 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+
 // links //
 a {
   color: #3498db;
