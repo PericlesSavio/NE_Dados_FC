@@ -1,5 +1,5 @@
 <tr>     
-    <td>{{ row.data }}</td>
+    <td><a href="{{url_for('partidas', partida=row.id_jogo )}}">{{ row.data }}</a></td>
     <td>{{ row.rodada }}</td>
     <td>{{ row.mandante }}</td>
     <td>{{ row.gol_m }}-{{ row.gol_v }}<i> {{ row.obs }}</i></td>

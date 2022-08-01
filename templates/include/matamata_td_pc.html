@@ -1,5 +1,5 @@
 <tr>
-    <td>{{ row.data_ida }}<br>{{ row.data_volta }}</td>
+    <td><a href="{{url_for('partidas', partida=row.id_ida )}}">{{ row.data_ida }}</a><br><a href="{{url_for('partidas', partida=row.id_volta )}}">{{ row.data_volta }}</a></td>
     <td>{{ row.rodada_ida }}<br>{{ row.rodada_volta }}</td>
     <td>{{ row.mandante_ida }}<br>{{ row.mandante_volta }}</td>
     <td>{{ row.placar_ida }} <i>{{ row.obs_ida }}</i><br>{{ row.placar_volta }}<br><i>{{ row.obs_volta }}</i></td>
