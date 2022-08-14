@@ -14,7 +14,7 @@
   
     <div class="box">
 
-      {% if gols|length %}
+      {% if partida|length %}
         <table class="pc">
           <tr>
             <th class="w-6rem vertical-bottom">
@@ -32,8 +32,19 @@
           {% for row in gols %}
           <tr>     
             <td><a href="{{url_for('jogador', jogador=row.slug_jogador )}}">{{ row.jogador_m }}</a> <i>{{ row.gol_tipo_m }}</i></td>
-            <td>{{ row.min }} ({{ row.tempo }})</td>
-            <td>{{ row.jogador_v }} <i>{{ row.gol_tipo_v }}</i></td>
+            <td>
+              {{ row.min }}
+
+                  {% if gols|length %}
+                      -
+                  {% else %}
+                      
+                  {% endif %}
+
+              
+                {{ row.tempo }}
+            </td>
+            <td><a href="{{url_for('jogador', jogador=row.slug_jogador )}}">{{ row.jogador_v }}</a> <i>{{ row.gol_tipo_v }}</i></td>
           </tr>
             {% endfor %}
         </table>

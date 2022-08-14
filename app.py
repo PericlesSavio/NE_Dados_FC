@@ -13,12 +13,8 @@ lista_estadios = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Est�
 lista_observacoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Observações')
 lista_colocacoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Posições')
 lista_mundanca_clube = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Mudanças')
-lista_competicoes = pd.DataFrame(
-    columns=['codigo', 'competicao'],
-    data = ([
-        ['ne', 'Copa do Nordeste'],
-        ['br1', 'Campeonato Brasileiro Série A1']
-    ]))
+lista_competicoes = pd.read_excel('dados/Futebol Nordestino.xlsx', sheet_name='Competições')
+
 
 #funções
 def partidas_1(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, id_jogo = 0):
@@ -329,14 +325,16 @@ def gols_partida(id_jogo):
     try:
         gols.loc[(gols['clube'] == gols['visitante']) & (gols['tipo'] == 'Contra'), 'gol_tipo_m'] = 'Contra'
     except:
-        pass    
+        pass
 
-    return gols.where(pd.notnull(gols), '')[['id_jogo', 'jogador', 'clube', 'tempo', 'min', 'tipo', 'alcunha',
+    try:
+        gols[['id_jogo', 'jogador', 'clube', 'tempo', 'min', 'tipo', 'alcunha',
        'slug_jogador', 'mandante', 'visitante', 'gol_m', 'gol_v', 'slug_clube', 'jogador_m', 'jogador_v',
        'gol_tipo_v', 'gol_tipo_m']]
+    except:
+        pass   
 
-
-
+    return gols.where(pd.notnull(gols), '')
 
 #flask app
 app = Flask(__name__)
@@ -537,8 +535,8 @@ def partidas(partida):
     partida_dados = partidas_1(competicao = 0, ano = 0, grupo = 0, fase = 0, rodada = 0, id_jogo = partida)
 
     try:
-        slug_mandante = pd.merge(left=partida_dados, right=lista_clubes, left_on='mandante', right_on='clube', how='left').loc[0, 'slug_clube']
-        slug_visitante = pd.merge(left=partida_dados, right=lista_clubes, left_on='visitante', right_on='clube', how='left').loc[0, 'slug_clube']
+        slug_mandante = partida_dados.loc[0, 'slug_clube_m']
+        slug_visitante = partida_dados.loc[0, 'slug_clube_v']
     
         return render_template('/partidas.html',
             title = partida_dados.loc[0, 'mandante'] + ' ' + str(partida_dados.loc[0, 'gol_m']) + '-' + str(partida_dados.loc[0, 'gol_v']) + ' ' + partida_dados.loc[0, 'visitante'],
@@ -558,7 +556,7 @@ def partidas(partida):
 @app.route('/jogador/<jogador>')
 def jogador(jogador):
     
-    jogador_dados = lista_jogadores[lista_jogadores['slug_jogador'] == jogador]
+    jogador_dados = lista_jogadores[lista_jogadores['slug_jogador'] == jogador].reset_index()
 
     try:
         return render_template('/jogador.html',
@@ -566,7 +564,11 @@ def jogador(jogador):
             alcunha = jogador_dados.loc[0, 'alcunha'],
         )
     except:
-        return render_template('/404.html')
+        #return render_template('/404.html')
+        return render_template('/jogador.html',
+            title = jogador_dados.loc[0, 'jogador'],
+            alcunha = jogador_dados.loc[0, 'alcunha'],
+        )
 
 
 
