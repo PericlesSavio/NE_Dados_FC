@@ -621,6 +621,24 @@
       {% else %}
       {% endif %}
 
+      <!-- DECISÃO DE 3º LUGAR-->
+      {% if d3l|length %}
+        <h2>Decisão de 3º lugar</h2>      
+        <table class="pc"> 
+          {% include 'include/partidas_th_pc.html' %}
+          {% for row in d3l %}
+          {% include 'include/partidas_td_pc.html' %}
+          {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in d3l %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
       <!-- FINAL-->
       {% if final|length %}
         <h2>Final</h2>      

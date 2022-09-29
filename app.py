@@ -369,7 +369,7 @@ def ne(edicao, sigla_competicao):
         pts_empate_com_gols = 1
         pts_vitoria = 3
     
-    competicao = lista_competicoes[lista_competicoes['codigo'] == sigla_competicao]['competicao'][0]    
+    competicao = lista_competicoes[lista_competicoes['codigo'] == sigla_competicao]['competicao'].reset_index(drop=True)[0]    
     try:
         return render_template('/ne.html',
 
@@ -458,6 +458,8 @@ def ne(edicao, sigla_competicao):
             sf=partidas_1(competicao, ano, 0, 'Semifinal', 'Único').to_dict('records'),
             sf2=mata_mata(competicao, ano, fase='Semifinal').to_dict('records'),
 
+            d3l=partidas_1(competicao, ano, 0, 'Decisão de 3º lugar', 'Único').to_dict('records'),
+
             final=partidas_1(competicao, ano, 0, 'Final', 'Único').to_dict('records'),
             final2=mata_mata(competicao, ano, fase='Final').to_dict('records')
         )
@@ -470,7 +472,7 @@ def ne(edicao, sigla_competicao):
 def comp(sigla_competicao):
 
     # parâmetros
-    competicao = lista_competicoes[lista_competicoes['codigo'] == sigla_competicao]['competicao'][0]
+    competicao = lista_competicoes[lista_competicoes['codigo'] == sigla_competicao]['competicao'].reset_index(drop=True)[0]
 
     return render_template('/comp.html',
 
