@@ -158,7 +158,7 @@
 
 
 
-
+        <!--Primeira Fase-->
       {% if primeira_fase_jogos|length %}
         <h2>Primeira fase</h2>
         <table class="pc"> 
@@ -391,6 +391,103 @@
       {% else %}
       {% endif %}
 
+      {% if seria_a_jogos|length %}          
+        <h3>Série A</h3>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in seria_a_jogos %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in seria_a_jogos %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+        <br>
+        <table class="pc"> 
+            {% include 'include/classificacao_th_pc.html' %}    
+            {% for row in seria_a_classificacao %}
+            {% include 'include/classificacao_td_pc.html' %}        
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/classificacao_th_mobile.html' %}    
+          {% for row in seria_a_classificacao %}
+          {% include 'include/classificacao_td_mobile.html' %}        
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      {% if seria_b_jogos|length %}          
+        <h3>Série B</h3>
+        <table class="pc"> 
+            {% include 'include/partidas_th_pc.html' %}
+            {% for row in seria_b_jogos %}
+            {% include 'include/partidas_td_pc.html' %}
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in seria_b_jogos %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+        <br>
+        <table class="pc"> 
+            {% include 'include/classificacao_th_pc.html' %}    
+            {% for row in seria_b_classificacao %}
+            {% include 'include/classificacao_td_pc.html' %}        
+            {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/classificacao_th_mobile.html' %}    
+          {% for row in seria_b_classificacao %}
+          {% include 'include/classificacao_td_mobile.html' %}        
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+
+      <!-- Extra-->
+      {% if extra|length %}
+        <h2>Extra</h2>      
+        <table class="pc"> 
+          {% include 'include/partidas_th_pc.html' %}
+          {% for row in extra %}
+          {% include 'include/partidas_td_pc.html' %}
+          {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/partidas_th_mobile.html' %}
+          {% for row in extra %}
+          {% include 'include/partidas_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+      
+      {% if extra2|length %}
+        <h2>Extra</h2>      
+        <table class="pc"> 
+          {% include 'include/matamata_th_pc.html' %}
+          {% for row in extra2 %}
+          {% include 'include/matamata_td_pc.html' %}
+          {% endfor %}
+        </table>
+        <table class="mobile">
+          {% include 'include/matamata_th_mobile.html' %}
+          {% for row in extra2 %}
+          {% include 'include/matamata_td_mobile.html' %}
+          {% endfor %}
+        </table>
+      {% else %}
+      {% endif %}
+
+      <!--Segunda Fase-->
 
       {% if grupo_e2_jogos|length %}
         <h2>Segunda fase</h2>

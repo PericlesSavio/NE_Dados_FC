@@ -152,9 +152,9 @@ def dados(competicao, ano):
 
     dados = {
         'Participantes': len(participacoes(ano, competicao)),
-        'Nº de partidas': classificacao('Copa do Nordeste', ano).sum()['j'],
-        'Total de gols': classificacao('Copa do Nordeste', ano).sum()['gp'],
-        'Média de gols': "{:.2f}".format(classificacao('Copa do Nordeste', ano).sum()['gp'] / classificacao('Copa do Nordeste', ano).sum()['j']),
+        'Nº de partidas': classificacao(competicao, ano).sum()['j'],
+        'Total de gols': classificacao(competicao, ano).sum()['gp'],
+        'Média de gols': "{:.2f}".format(classificacao(competicao, ano).sum()['gp'] / classificacao(competicao, ano).sum()['j']),
         'Período': [inicio, final]
         }
     return dados
@@ -368,6 +368,16 @@ def ne(edicao, sigla_competicao):
         pts_empate_sem_gols = 1
         pts_empate_com_gols = 1
         pts_vitoria = 3
+
+    if ano < 1994:
+        pts_empate_sem_gols = 1
+        pts_empate_com_gols = 1
+        pts_vitoria = 2
+    else:
+        pts_empate_sem_gols = 1
+        pts_empate_com_gols = 1
+        pts_vitoria = 3
+    
     
     competicao = lista_competicoes[lista_competicoes['codigo'] == sigla_competicao]['competicao'].reset_index(drop=True)[0]    
     try:
@@ -439,6 +449,18 @@ def ne(edicao, sigla_competicao):
             grupo_b_cruzado_classificacao = grupos_cruzados(competicao, ano, fase = 'Primeira fase', grupo = 'B').to_dict('records'),
 
             segundoscolocados = segundos_colocados(competicao, ano, 'Primeira fase').to_dict('records'),
+
+            extra = partidas_1(competicao, ano, 'Série B', 'Extra').to_dict('records'),
+
+            # primeira fase
+            seria_a_jogos = partidas_1(competicao, ano, 'Série A', 'Primeira fase').to_dict('records'),
+            seria_a_classificacao = classificacao(
+                competicao, ano, 'Série A', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+
+            seria_b_jogos = partidas_1(competicao, ano, 'Série B', 'Primeira fase').to_dict('records'),
+            seria_b_classificacao = classificacao(
+                competicao, ano, 'Série B', 'Primeira fase', empate_sem_gols = pts_empate_sem_gols, empate_com_gols = pts_empate_com_gols).to_dict('records'),
+
 
             # segunda fase / mata-matas
             grupo_e2_jogos = partidas_1(competicao, ano, 'Grupo E', 'Segunda fase').to_dict('records'),
